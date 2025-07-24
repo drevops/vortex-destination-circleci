@@ -1,0 +1,14 @@
+{
+  "name": "drevops/generic-private-package",
+  "description": "A generic private package used to test GitHub authentication via Composer.",
+  "type": "library",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Alex Skrypnyk",
+      "email": "alex@drevops.com"
+    }
+  ],
+  "homepage": "https://github.com/drevops/generic-private-package",
+  "require": {}
+}
