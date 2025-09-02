@@ -1,8 +1,0 @@
-@@ -51,7 +51,6 @@
- web/themes/**/build
- .data
- .logs
--.phpunit.cache
- .twig-cs-fixer.cache
- 
- # Ignore local override files.
