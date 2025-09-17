@@ -1,8 +1,0 @@
-@@ -44,7 +44,6 @@
- !.prettierignore
- !.prettierrc.json
- !patches
--!phpcs.xml
- !phpmd.xml
- !phpstan.neon
- !phpunit.xml
