@@ -341,3 +341,27 @@ function curl_request(string $url, array $options = []): array {
     'info' => $info,
   ];
 }
+
+// Never run the real quit() function during tests. This also avoids bleeding
+// into global namespace when running multiple tests that share the same
+// test process.
+// Note that this replicates the behaviour of global built-in functions
+// like passthru() and exec() which are *not defined in this namespace*. We only
+// defined quit() in a namespace because mocking of global functions can only
+// be done if they are defined in a namespace.
+if (!function_exists('DrevOps\VortexTooling\quit') && !class_exists('PHPUnit\\Framework\\TestCase')) {
+
+  /**
+   * Exit script with given code.
+   *
+   * Wrapper around exit() to allow mocking in tests since exit() cannot be
+   * directly mocked despite being a function in PHP 8.4+.
+   *
+   * @param int $code
+   *   Exit code (0 for success, non-zero for error).
+   */
+  function quit(int $code = 0): void {
+    exit($code);
+  }
+
+}

@@ -23,6 +23,8 @@
             ignoreIndirectDeprecations="true">
         <include>
             <directory suffix="">src</directory>
+            <directory suffix="TestCase.php">tests</directory>
+            <directory suffix="Trait.php">tests</directory>
         </include>
     </source>
     <coverage pathCoverage="false"
@@ -37,7 +39,4 @@
     <logging>
         <junit outputFile=".logs/junit.xml"/>
     </logging>
-    <php>
-        <ini name="memory_limit" value="4G"/>
-    </php>
 </phpunit>

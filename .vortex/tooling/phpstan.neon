@@ -22,3 +22,7 @@ parameters:
       message: '#.*no value type specified in iterable type array.#'
       path: tests/*
       reportUnmatched: false
+    -
+      message: '#.*[Ff]unction DrevOps\\VortexTooling\\.* not found.*#'
+      path: tests/Self/*
+      reportUnmatched: false
