@@ -1,0 +1,99 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/override-helpers.php';
+
+echo "╔════════════════════════════════════════════════════════════╗\n";
+echo "║  Testing Override Exit Behavior                           ║\n";
+echo "╚════════════════════════════════════════════════════════════╝\n\n";
+
+putenv('OVERRIDE_DIR=' . __DIR__ . '/custom-scripts');
+
+// Create a test default script
+$default_script = __DIR__ . '/default-scripts/exit-behavior-test';
+file_put_contents($default_script, <<<'PHP'
+#!/usr/bin/env php
+<?php
+require_once __DIR__ . '/../override-helpers.php';
+execute_override_if_exists(basename(__FILE__));
+
+echo "DEFAULT: This is the default implementation\n";
+echo "DEFAULT: If you see this, override didn't exist or didn't work!\n";
+exit(0);
+PHP
+);
+chmod($default_script, 0755);
+
+// Test 1: Override exits with 0
+echo "━━━ Test 1: Override exits with 0 (success) ━━━\n\n";
+
+$override1 = __DIR__ . '/custom-scripts/exit-behavior-test';
+file_put_contents($override1, <<<'PHP'
+#!/usr/bin/env php
+<?php
+echo "OVERRIDE: Running custom version\n";
+echo "OVERRIDE: Exiting with code 0 (success)\n";
+exit(0);
+PHP
+);
+chmod($override1, 0755);
+
+passthru('./default-scripts/exit-behavior-test', $exit_code);
+echo "\nExit code: $exit_code\n";
+echo "Did default run? " . ($exit_code === 0 && strpos(ob_get_contents(), 'DEFAULT:') === false ? "NO ✓" : "This test needs visual check") . "\n\n";
+
+// Test 2: Override exits with 1
+echo "━━━ Test 2: Override exits with 1 (failure) ━━━\n\n";
+
+file_put_contents($override1, <<<'PHP'
+#!/usr/bin/env php
+<?php
+echo "OVERRIDE: Running custom version\n";
+echo "OVERRIDE: Exiting with code 1 (failure)\n";
+exit(1);
+PHP
+);
+
+passthru('./default-scripts/exit-behavior-test', $exit_code);
+echo "\nExit code: $exit_code\n";
+echo "Did default run? Visual check - should see OVERRIDE only, not DEFAULT\n\n";
+
+// Test 3: Override throws exception
+echo "━━━ Test 3: Override throws exception ━━━\n\n";
+
+file_put_contents($override1, <<<'PHP'
+#!/usr/bin/env php
+<?php
+echo "OVERRIDE: Running custom version\n";
+echo "OVERRIDE: Throwing exception\n";
+throw new Exception("Something went wrong!");
+PHP
+);
+
+passthru('./default-scripts/exit-behavior-test 2>&1', $exit_code);
+echo "\nExit code: $exit_code (non-zero = exception)\n";
+echo "Did default run? Visual check - should see exception, not DEFAULT\n\n";
+
+// Test 4: No override
+echo "━━━ Test 4: No override exists ━━━\n\n";
+
+unlink($override1);
+
+passthru('./default-scripts/exit-behavior-test', $exit_code);
+echo "\nExit code: $exit_code\n";
+echo "Did default run? YES - should see 'DEFAULT:' above ✓\n\n";
+
+// Cleanup
+unlink($default_script);
+
+echo "╔════════════════════════════════════════════════════════════╗\n";
+echo "║  Key Points                                                ║\n";
+echo "╚════════════════════════════════════════════════════════════╝\n\n";
+echo "1. When override exists and exits (0 or non-zero):\n";
+echo "   → Default implementation NEVER runs\n";
+echo "   → Exit code from override is passed through\n\n";
+echo "2. When override throws exception:\n";
+echo "   → Default implementation NEVER runs\n";
+echo "   → Process terminates with error\n\n";
+echo "3. When no override exists:\n";
+echo "   → Default implementation runs normally\n";

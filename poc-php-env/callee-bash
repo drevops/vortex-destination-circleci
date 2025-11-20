@@ -1,0 +1,3 @@
+#!/bin/bash
+
+echo "CALLEE-BASH: MY_VAR=$MY_VAR"

@@ -1,0 +1,8 @@
+#!/usr/bin/env php
+<?php
+
+echo "TASK-BETA (CUSTOM): Running CUSTOM implementation!!!\n";
+echo "TASK-BETA (CUSTOM): MY_VAR=" . getenv('MY_VAR') . "\n";
+echo "TASK-BETA (CUSTOM): This overrides the default task-beta\n";
+
+exit(1);

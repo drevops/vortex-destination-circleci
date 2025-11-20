@@ -1,0 +1,58 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/override-helpers.php';
+
+echo "╔════════════════════════════════════════════════════════════╗\n";
+echo "║  Script Override System Demo                              ║\n";
+echo "╚════════════════════════════════════════════════════════════╝\n\n";
+
+// Set environment variables
+putenv('MY_VAR=hello');
+putenv('OVERRIDE_DIR=' . __DIR__ . '/custom-scripts');
+
+echo "Environment:\n";
+echo "  MY_VAR=" . getenv('MY_VAR') . "\n";
+echo "  OVERRIDE_DIR=" . getenv('OVERRIDE_DIR') . "\n\n";
+
+// Option 1: Script checks for its own override (task-alpha does this)
+echo "━━━ Option 1: Script self-checks for override ━━━\n\n";
+echo "Calling: ./default-scripts/task-alpha\n";
+echo "(task-alpha checks for override internally)\n\n";
+$exit_code = 0;
+passthru('./default-scripts/task-alpha', $exit_code);
+echo "\n";
+
+// Option 2: Caller checks for override before calling (task-beta)
+echo "━━━ Option 2: Caller checks for override ━━━\n\n";
+echo "Calling: task-beta (caller checks for override)\n\n";
+$exit_code = 0;
+execute_with_override('./default-scripts/task-beta', $exit_code);
+echo "\n";
+
+// Option 3: No override directory set - use defaults
+echo "━━━ Option 3: No override directory (defaults used) ━━━\n\n";
+putenv('OVERRIDE_DIR=');
+echo "Unsetting OVERRIDE_DIR...\n\n";
+
+echo "Calling: ./default-scripts/task-alpha\n\n";
+$exit_code = 0;
+passthru('./default-scripts/task-alpha', $exit_code);
+echo "\n";
+
+echo "Calling: task-beta\n\n";
+putenv('OVERRIDE_DIR=' . __DIR__ . '/custom-scripts');  // Reset for demo
+$exit_code = 0;
+execute_with_override('./default-scripts/task-beta', $exit_code);
+echo "\n";
+
+echo "╔════════════════════════════════════════════════════════════╗\n";
+echo "║  Summary                                                   ║\n";
+echo "╚════════════════════════════════════════════════════════════╝\n\n";
+echo "Option 1: Scripts check for their own overrides\n";
+echo "  - Add execute_override_if_exists() at script start\n";
+echo "  - Script automatically delegates to custom version\n\n";
+echo "Option 2: Caller checks for overrides\n";
+echo "  - Use execute_with_override() when calling scripts\n";
+echo "  - Works even if callee doesn't know about overrides\n\n";
+echo "Both options work! Choose based on your needs.\n";

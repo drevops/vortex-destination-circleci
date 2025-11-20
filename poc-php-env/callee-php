@@ -1,0 +1,4 @@
+#!/usr/bin/env php
+<?php
+
+echo "CALLEE-PHP: MY_VAR=" . getenv('MY_VAR') . "\n";
