@@ -3,7 +3,7 @@
 
 // Option 1: Self-override check at the start
 require_once __DIR__ . '/../override-helpers.php';
-execute_override_if_exists(basename(__FILE__));
+execute_override(basename(__FILE__));
 
 // If we got here, no override exists - run default implementation
 echo "TASK-ALPHA (default): Running default implementation\n";

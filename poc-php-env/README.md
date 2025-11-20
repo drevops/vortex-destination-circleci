@@ -118,12 +118,13 @@ default-scripts/task-alpha  →  custom-scripts/task-alpha (overrides)
 ```
 
 **Usage:**
+
 ```php
 putenv('OVERRIDE_DIR=/path/to/custom');
 
 // Option 1: Script checks itself
 require_once 'override-helpers.php';
-execute_override_if_exists(basename(__FILE__));
+execute_override(basename(__FILE__));
 // Continues if no override exists
 
 // Option 2: Caller checks

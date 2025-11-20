@@ -42,7 +42,7 @@ When calling a script, the system checks:
 require_once __DIR__ . '/../override-helpers.php';
 
 // Check if custom version exists - if yes, execute it and exit
-execute_override_if_exists(basename(__FILE__));
+execute_override(basename(__FILE__));
 
 // If we're still here, no override exists - run default code
 echo "Running default implementation\n";
@@ -105,7 +105,7 @@ Add to the START of any script that should be overrideable:
 
 ```php
 require_once __DIR__ . '/../override-helpers.php';
-execute_override_if_exists(basename(__FILE__));
+execute_override(basename(__FILE__));
 // If override exists, it runs and this script exits
 // If no override, execution continues
 ```

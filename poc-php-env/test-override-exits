@@ -15,7 +15,7 @@ file_put_contents($default_script, <<<'PHP'
 #!/usr/bin/env php
 <?php
 require_once __DIR__ . '/../override-helpers.php';
-execute_override_if_exists(basename(__FILE__));
+execute_override(basename(__FILE__));
 
 echo "DEFAULT: This is the default implementation\n";
 echo "DEFAULT: If you see this, override didn't exist or didn't work!\n";
