@@ -89,22 +89,23 @@
 
 **Script Tests (12 tests):**
 
-15. **testMockCurlScriptGetSuccess** - GET through script (uses test-curl-get-passing)
-16. **testMockCurlScriptGetFailure** - GET 404 through script (uses test-curl-get-failing)
-17. **testMockCurlScriptGetCustomSuccess** - Custom values through script (uses test-curl-get-passing)
-18. **testMockCurlScriptGetDefaultsSuccess** - Defaults through script (uses test-curl-get-passing)
-19. **testMockCurlScriptGetNetworkError** - Network error through script (uses test-curl-get-failing)
-20. **testMockCurlScriptPostSuccess** - POST success through script (uses test-curl-post-passing)
-21. **testMockCurlScriptPostFailure** - POST failure through script (uses test-curl-post-failing)
-22. **testMockCurlScriptMultipleSuccess** - Multiple calls through script
-23. **testMockCurlScriptMultipleMoreCallsFailure** - Too many calls through script
-24. **testMockCurlScriptMultipleLessCallsFailure** - Too few calls through script
-25. **testMockCurlScriptFailureArgumentExceptionUrl** - Missing URL through script
-26. **testMockCurlScriptFailureAssertUnexpectedUrl** - URL mismatch through script
+15. **testMockCurlGetScriptPassingSuccess** - GET through script (uses test-curl-get-passing)
+16. **testMockCurlGetScriptFailingSuccess** - GET 404 through script (uses test-curl-get-failing)
+17. **testMockCurlGetScriptCustomSuccess** - Custom values through script (uses test-curl-get-passing)
+18. **testMockCurlGetScriptDefaultsSuccess** - Defaults through script (uses test-curl-get-passing)
+19. **testMockCurlGetScriptNetworkErrorSuccess** - Network error through script (uses test-curl-get-failing)
+20. **testMockCurlPostScriptPassingSuccess** - POST success through script (uses test-curl-post-passing)
+21. **testMockCurlPostScriptFailingSuccess** - POST failure through script (uses test-curl-post-failing)
+22. **testMockCurlMultipleScriptSuccess** - Multiple calls through script
+23. **testMockCurlMultipleScriptMoreCallsFailure** - Too many calls through script
+24. **testMockCurlMultipleScriptLessCallsFailure** - Too few calls through script
+25. **testMockCurlGetScriptFailureArgumentExceptionUrl** - Missing URL through script
+26. **testMockCurlGetScriptFailureAssertUnexpectedUrl** - URL mismatch through script
 
 **Naming Convention:**
 - **Test method names**: Use `Success`/`Failure` to indicate the test pathway (what behavior is being tested)
 - **Fixture names**: Use `passing`/`failing` to describe the fixture behavior (whether it passes or fails)
+- **Curl script test naming**: For curl tests with multiple methods (get, post, request), the pattern is `testMockCurl[Method]Script[Description][Outcome]` (e.g., `testMockCurlGetScriptPassingSuccess`, `testMockCurlPostScriptFailingSuccess`)
 
 ## 3. Test Fixtures (tests/Fixtures/)
 

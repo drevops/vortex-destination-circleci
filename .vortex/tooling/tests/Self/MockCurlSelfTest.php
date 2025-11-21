@@ -305,7 +305,7 @@ class MockCurlSelfTest extends UnitTestCase {
   // SCRIPT TESTS
   // =========================================================================
 
-  public function testMockCurlScriptGetSuccess(): void {
+  public function testMockCurlGetScriptPassingSuccess(): void {
     $this->mockCurl([
       'url' => 'https://example.com/api',
       'response' => [
@@ -322,7 +322,7 @@ class MockCurlSelfTest extends UnitTestCase {
     $this->assertStringContainsString('Response body: success response', $output);
   }
 
-  public function testMockCurlScriptGetFailure(): void {
+  public function testMockCurlGetScriptFailingSuccess(): void {
     $this->mockCurl([
       'url' => 'https://example.com/not-found',
       'response' => [
@@ -340,7 +340,7 @@ class MockCurlSelfTest extends UnitTestCase {
     $this->assertStringContainsString('Request failed as expected', $output);
   }
 
-  public function testMockCurlScriptGetCustomSuccess(): void {
+  public function testMockCurlGetScriptCustomSuccess(): void {
     $this->mockCurl([
       'url' => 'https://example.com/api',
       'response' => [
@@ -355,7 +355,7 @@ class MockCurlSelfTest extends UnitTestCase {
     $this->assertStringContainsString('Response body: custom response', $output);
   }
 
-  public function testMockCurlScriptGetDefaultsSuccess(): void {
+  public function testMockCurlGetScriptDefaultsSuccess(): void {
     $this->mockCurl([
       'url' => 'https://example.com/api',
       'response' => [
@@ -369,7 +369,7 @@ class MockCurlSelfTest extends UnitTestCase {
     $this->assertStringContainsString('Response ok: true', $output);
   }
 
-  public function testMockCurlScriptGetNetworkError(): void {
+  public function testMockCurlGetScriptNetworkErrorSuccess(): void {
     $this->mockCurl([
       'url' => 'https://example.com/not-found',
       'response' => [
@@ -386,7 +386,7 @@ class MockCurlSelfTest extends UnitTestCase {
     $this->assertStringContainsString('Response ok: false', $output);
   }
 
-  public function testMockCurlScriptPostSuccess(): void {
+  public function testMockCurlPostScriptPassingSuccess(): void {
     $this->mockCurl([
       'url' => 'https://example.com/api',
       'method' => 'POST',
@@ -404,7 +404,7 @@ class MockCurlSelfTest extends UnitTestCase {
     $this->assertStringContainsString('POST succeeded', $output);
   }
 
-  public function testMockCurlScriptPostFailure(): void {
+  public function testMockCurlPostScriptFailingSuccess(): void {
     $this->mockCurl([
       'url' => 'https://example.com/error',
       'method' => 'POST',
@@ -423,7 +423,7 @@ class MockCurlSelfTest extends UnitTestCase {
     $this->assertStringContainsString('POST failed as expected', $output);
   }
 
-  public function testMockCurlScriptMultipleSuccess(): void {
+  public function testMockCurlMultipleScriptSuccess(): void {
     $this->mockCurl([
       'url' => 'https://example.com/first',
       'response' => ['status' => 200, 'body' => 'first'],
@@ -450,7 +450,7 @@ class MockCurlSelfTest extends UnitTestCase {
     $this->assertStringContainsString('Script completed', $output);
   }
 
-  public function testMockCurlScriptMultipleMoreCallsFailure(): void {
+  public function testMockCurlMultipleScriptMoreCallsFailure(): void {
     $this->mockCurl([
       'url' => 'https://example.com/first',
       'response' => ['status' => 200, 'body' => 'first'],
@@ -462,7 +462,7 @@ class MockCurlSelfTest extends UnitTestCase {
     $this->runScript('test-curl-multiple', 'tests/Fixtures');
   }
 
-  public function testMockCurlScriptMultipleLessCallsFailure(): void {
+  public function testMockCurlMultipleScriptLessCallsFailure(): void {
     $this->mockCurl([
       'url' => 'https://example.com/first',
       'response' => ['status' => 200, 'body' => 'first'],
@@ -494,7 +494,7 @@ class MockCurlSelfTest extends UnitTestCase {
     $this->mockCurlAssertAllMocksConsumed();
   }
 
-  public function testMockCurlScriptFailureArgumentExceptionUrl(): void {
+  public function testMockCurlGetScriptFailureArgumentExceptionUrl(): void {
     $this->mockCurl([
       'response' => ['status' => 200],
     ]);
@@ -505,7 +505,7 @@ class MockCurlSelfTest extends UnitTestCase {
     $this->runScript('test-curl-get-passing', 'tests/Fixtures');
   }
 
-  public function testMockCurlScriptFailureAssertUnexpectedUrl(): void {
+  public function testMockCurlGetScriptFailureAssertUnexpectedUrl(): void {
     $this->mockCurl([
       'url' => 'https://wrong.com/api',
       'response' => ['status' => 200],
