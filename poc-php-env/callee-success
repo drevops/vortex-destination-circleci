@@ -1,6 +1,0 @@
-#!/usr/bin/env php
-<?php
-
-echo "CALLEE-SUCCESS: MY_VAR=" . getenv('MY_VAR') . "\n";
-echo "CALLEE-SUCCESS: Exiting with code 0\n";
-exit(0);

@@ -1,6 +1,0 @@
-#!/usr/bin/env php
-<?php
-
-echo "CALLEE-FAIL: MY_VAR=" . getenv('MY_VAR') . "\n";
-echo "CALLEE-FAIL: Exiting with code 1\n";
-exit(1);

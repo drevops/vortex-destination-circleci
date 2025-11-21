@@ -1,8 +1,0 @@
-#!/usr/bin/env php
-<?php
-
-// This script does NOT check for overrides itself
-// It relies on the caller to check
-
-echo "TASK-BETA (default): Running default implementation\n";
-echo "TASK-BETA (default): MY_VAR=" . getenv('MY_VAR') . "\n";
