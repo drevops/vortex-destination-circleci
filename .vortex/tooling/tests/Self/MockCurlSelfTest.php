@@ -314,7 +314,7 @@ class MockCurlSelfTest extends UnitTestCase {
       ],
     ]);
 
-    $output = $this->runScript('test-curl-get-success', 'tests/Fixtures');
+    $output = $this->runScript('test-curl-get-passing', 'tests/Fixtures');
 
     $this->assertStringContainsString('Script will call curl_get', $output);
     $this->assertStringContainsString('Response status: 200', $output);
@@ -332,7 +332,7 @@ class MockCurlSelfTest extends UnitTestCase {
       ],
     ]);
 
-    $output = $this->runScript('test-curl-get-failure', 'tests/Fixtures');
+    $output = $this->runScript('test-curl-get-failing', 'tests/Fixtures');
 
     $this->assertStringContainsString('Script will call curl_get expecting failure', $output);
     $this->assertStringContainsString('Response status: 404', $output);
@@ -349,7 +349,7 @@ class MockCurlSelfTest extends UnitTestCase {
       ],
     ]);
 
-    $output = $this->runScript('test-curl-get-success', 'tests/Fixtures');
+    $output = $this->runScript('test-curl-get-passing', 'tests/Fixtures');
 
     $this->assertStringContainsString('Response status: 201', $output);
     $this->assertStringContainsString('Response body: custom response', $output);
@@ -363,7 +363,7 @@ class MockCurlSelfTest extends UnitTestCase {
       ],
     ]);
 
-    $output = $this->runScript('test-curl-get-success', 'tests/Fixtures');
+    $output = $this->runScript('test-curl-get-passing', 'tests/Fixtures');
 
     $this->assertStringContainsString('Response status: 200', $output);
     $this->assertStringContainsString('Response ok: true', $output);
@@ -380,7 +380,7 @@ class MockCurlSelfTest extends UnitTestCase {
       ],
     ]);
 
-    $output = $this->runScript('test-curl-get-failure', 'tests/Fixtures');
+    $output = $this->runScript('test-curl-get-failing', 'tests/Fixtures');
 
     $this->assertStringContainsString('Response status: 0', $output);
     $this->assertStringContainsString('Response ok: false', $output);
@@ -396,12 +396,31 @@ class MockCurlSelfTest extends UnitTestCase {
       ],
     ]);
 
-    $output = $this->runScript('test-curl-post-success', 'tests/Fixtures');
+    $output = $this->runScript('test-curl-post-passing', 'tests/Fixtures');
 
     $this->assertStringContainsString('Script will call curl_post', $output);
     $this->assertStringContainsString('Response status: 201', $output);
     $this->assertStringContainsString('Response ok: true', $output);
     $this->assertStringContainsString('POST succeeded', $output);
+  }
+
+  public function testMockCurlScriptPostFailure(): void {
+    $this->mockCurl([
+      'url' => 'https://example.com/error',
+      'method' => 'POST',
+      'response' => [
+        'ok' => FALSE,
+        'status' => 500,
+        'body' => 'Internal Server Error',
+      ],
+    ]);
+
+    $output = $this->runScript('test-curl-post-failing', 'tests/Fixtures');
+
+    $this->assertStringContainsString('Script will call curl_post expecting failure', $output);
+    $this->assertStringContainsString('Response status: 500', $output);
+    $this->assertStringContainsString('Response ok: false', $output);
+    $this->assertStringContainsString('POST failed as expected', $output);
   }
 
   public function testMockCurlScriptMultipleSuccess(): void {
@@ -483,7 +502,7 @@ class MockCurlSelfTest extends UnitTestCase {
     $this->expectException(\InvalidArgumentException::class);
     $this->expectExceptionMessage('Mocked curl response must include "url" key to specify expected URL.');
 
-    $this->runScript('test-curl-get-success', 'tests/Fixtures');
+    $this->runScript('test-curl-get-passing', 'tests/Fixtures');
   }
 
   public function testMockCurlScriptFailureAssertUnexpectedUrl(): void {
@@ -495,7 +514,7 @@ class MockCurlSelfTest extends UnitTestCase {
     $this->expectException(\RuntimeException::class);
     $this->expectExceptionMessage('curl request made to unexpected URL. Expected "https://wrong.com/api", got "https://example.com/api".');
 
-    $this->runScript('test-curl-get-success', 'tests/Fixtures');
+    $this->runScript('test-curl-get-passing', 'tests/Fixtures');
   }
 
 }
