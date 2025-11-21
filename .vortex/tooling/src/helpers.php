@@ -299,47 +299,51 @@ function curl_request(string $url, array $options = []): array {
 
   $ch = curl_init($url);
 
-  /** @var array<int, mixed> $opts */
-  $opts = [
-    CURLOPT_RETURNTRANSFER => TRUE,
-    CURLOPT_FOLLOWLOCATION => TRUE,
-    CURLOPT_TIMEOUT => $options['timeout'] ?? 10,
-  ];
+  try {
+    /** @var array<int, mixed> $opts */
+    $opts = [
+      CURLOPT_RETURNTRANSFER => TRUE,
+      CURLOPT_FOLLOWLOCATION => TRUE,
+      CURLOPT_TIMEOUT => $options['timeout'] ?? 10,
+    ];
 
-  if (isset($options['method'])) {
-    $opts[CURLOPT_CUSTOMREQUEST] = strtoupper((string) $options['method']);
+    if (isset($options['method'])) {
+      $opts[CURLOPT_CUSTOMREQUEST] = strtoupper((string) $options['method']);
+    }
+
+    if (isset($options['headers'])) {
+      $opts[CURLOPT_HTTPHEADER] = $options['headers'];
+    }
+
+    if (isset($options['body'])) {
+      $opts[CURLOPT_POSTFIELDS] = $options['body'];
+    }
+
+    curl_setopt_array($ch, $opts);
+
+    // With CURLOPT_RETURNTRANSFER, curl_exec returns string|false.
+    /** @var string|false $body */
+    $body = curl_exec($ch);
+    $error = curl_errno($ch) ? curl_error($ch) : NULL;
+    $info = curl_getinfo($ch);
+
+    // Handle curl_getinfo failure.
+    if ($info === FALSE) {
+      $info = ['http_code' => 0];
+    }
+
+    return [
+      'ok' => !$error && ($info['http_code'] < 400),
+      'status' => $info['http_code'],
+      'body' => $body,
+      'error' => $error,
+      'info' => $info,
+    ];
   }
-
-  if (isset($options['headers'])) {
-    $opts[CURLOPT_HTTPHEADER] = $options['headers'];
+  finally {
+    // Always close the curl handle, even if an exception occurs.
+    curl_close($ch);
   }
-
-  if (isset($options['body'])) {
-    $opts[CURLOPT_POSTFIELDS] = $options['body'];
-  }
-
-  curl_setopt_array($ch, $opts);
-
-  // With CURLOPT_RETURNTRANSFER, curl_exec returns string|false.
-  /** @var string|false $body */
-  $body = curl_exec($ch);
-  $error = curl_errno($ch) ? curl_error($ch) : NULL;
-  $info = curl_getinfo($ch);
-
-  curl_close($ch);
-
-  // Handle curl_getinfo failure.
-  if ($info === FALSE) {
-    $info = ['http_code' => 0];
-  }
-
-  return [
-    'ok' => !$error && ($info['http_code'] < 400),
-    'status' => $info['http_code'],
-    'body' => $body,
-    'error' => $error,
-    'info' => $info,
-  ];
 }
 
 // Never run the real quit() function during tests. This also avoids bleeding

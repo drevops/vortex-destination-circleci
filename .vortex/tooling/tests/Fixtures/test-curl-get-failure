@@ -1,0 +1,24 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * @file
+ * Failure fixture for curl_get testing.
+ */
+
+declare(strict_types=1);
+
+namespace DrevOps\VortexTooling;
+
+require_once __DIR__ . '/../../src/helpers.php';
+
+echo 'Script will call curl_get expecting failure' . PHP_EOL;
+
+$result = curl_get('https://example.com/not-found');
+
+echo 'Response status: ' . $result['status'] . PHP_EOL;
+echo 'Response ok: ' . ($result['ok'] ? 'true' : 'false') . PHP_EOL;
+
+if (!$result['ok']) {
+  echo 'Request failed as expected' . PHP_EOL;
+}
