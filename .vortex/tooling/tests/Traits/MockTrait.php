@@ -36,6 +36,30 @@ trait MockTrait {
    */
   protected bool $mockPassthruChecked = FALSE;
 
+  /**
+   * Stores curl mock objects.
+   *
+   * @var array<string, \PHPUnit\Framework\MockObject\MockObject>
+   */
+  protected array $mockCurl = [];
+
+  /**
+   * Stores curl responses for the mock.
+   *
+   * @var array<int, array{url: string, method?: string, response: array{ok: bool, status: int, body: string|false, error: string|null, info: array<string, mixed>}}>
+   */
+  protected array $mockCurlResponses = [];
+
+  /**
+   * Current index for curl responses.
+   */
+  protected int $mockCurlIndex = 0;
+
+  /**
+   * Flag to track if curl mocks were already checked.
+   */
+  protected bool $mockCurlChecked = FALSE;
+
   protected function mockTearDown(): void {
     // Verify all mocked passthru responses were consumed.
     $this->mockPassthruAssertAllMocksConsumed();
@@ -45,6 +69,15 @@ trait MockTrait {
     $this->mockPassthruResponses = [];
     $this->mockPassthruIndex = 0;
     $this->mockPassthruChecked = FALSE;
+
+    // Verify all mocked curl responses were consumed.
+    $this->mockCurlAssertAllMocksConsumed();
+
+    // Reset curl mock.
+    $this->mockCurl = [];
+    $this->mockCurlResponses = [];
+    $this->mockCurlIndex = 0;
+    $this->mockCurlChecked = FALSE;
   }
 
   /**
@@ -181,12 +214,12 @@ trait MockTrait {
   /**
    * Mock curl functions to return predefined responses.
    *
-   * @param array<int, array{status: int, body: string|bool, error?: string|int|null}> $responses
+   * @param array<int, array{url: string, method?: string, response: array{ok?: bool, status: int, body?: string|false, error?: string|null, info?: array<string, mixed>}}> $responses
    *   Array of responses to return for each curl call.
    *   Each response should have:
-   *   - status: HTTP status code
-   *   - body: Response body
-   *   - error: Optional error message (defaults to null for success).
+   *   - url: Expected URL (required)
+   *   - method: Expected HTTP method (optional)
+   *   - response: Response data with status, body, error, info.
    * @param string $namespace
    *   Namespace to mock the functions in (defaults to DrevOps\VortexTooling).
    *
@@ -194,93 +227,148 @@ trait MockTrait {
    *   When more curl requests are made than mocked responses available.
    */
   protected function mockCurlMultiple(array $responses, string $namespace = 'DrevOps\\VortexTooling'): void {
-    $curl_handle = 'mock_curl_handle';
-    $exec_index = 0;
-    $errno_index = 0;
-    $error_index = 0;
-    $getinfo_index = 0;
-    $total_responses = count($responses);
+    // Add responses to the class property.
+    $this->mockCurlResponses = array_merge($this->mockCurlResponses, $responses);
 
-    // Mock curl_init - returns a handle.
-    $curl_init = $this->getFunctionMock($namespace, 'curl_init');
-    $curl_init->expects($this->any())
-      ->willReturnCallback(function () use (&$exec_index, $total_responses, $curl_handle): string {
-        if ($exec_index >= $total_responses) {
-          throw new \RuntimeException(sprintf('curl_init() called more times than mocked responses. Expected %d request(s), but attempting request #%d.', $total_responses, $exec_index + 1));
+    // If mocks already exist, just add to responses and return.
+    if (!empty($this->mockCurl)) {
+      return;
+    }
+
+    // Track state across all curl function calls.
+    $current_url = NULL;
+    $current_method = NULL;
+
+    // Mock curl_init - stores URL and returns handle.
+    $this->mockCurl['curl_init'] = $this->getFunctionMock($namespace, 'curl_init');
+    $this->mockCurl['curl_init']->expects($this->any())
+      ->willReturnCallback(function ($url = NULL) use (&$current_url): string {
+        $total_responses = count($this->mockCurlResponses);
+
+        if ($this->mockCurlIndex >= $total_responses) {
+          throw new \RuntimeException(sprintf('curl_init() called more times than mocked responses. Expected %d request(s), but attempting request #%d.', $total_responses, $this->mockCurlIndex + 1));
         }
-        return $curl_handle;
+
+        $current_url = $url;
+        return 'mock_curl_handle';
       });
 
-    // Mock curl_setopt_array - always returns true.
-    $curl_setopt_array = $this->getFunctionMock($namespace, 'curl_setopt_array');
-    $curl_setopt_array->expects($this->any())->willReturn(TRUE);
-
-    // Mock curl_exec - returns response body for each call.
-    $curl_exec = $this->getFunctionMock($namespace, 'curl_exec');
-    $curl_exec->expects($this->any())
-      ->willReturnCallback(function () use ($responses, &$exec_index, $total_responses) {
-        if ($exec_index >= $total_responses) {
-          throw new \RuntimeException(sprintf('curl_exec() called more times than mocked responses. Expected %d request(s), but attempting request #%d.', $total_responses, $exec_index + 1));
+    // Mock curl_setopt_array - extracts method from options.
+    $this->mockCurl['curl_setopt_array'] = $this->getFunctionMock($namespace, 'curl_setopt_array');
+    $this->mockCurl['curl_setopt_array']->expects($this->any())
+      ->willReturnCallback(function ($ch, $options) use (&$current_method): bool {
+        if (isset($options[CURLOPT_CUSTOMREQUEST])) {
+          $current_method = $options[CURLOPT_CUSTOMREQUEST];
         }
-        $response = $responses[$exec_index++];
+        return TRUE;
+      });
+
+    // Mock curl_exec - validates and returns response body.
+    $this->mockCurl['curl_exec'] = $this->getFunctionMock($namespace, 'curl_exec');
+    $this->mockCurl['curl_exec']->expects($this->any())
+      ->willReturnCallback(function () use (&$current_url, &$current_method): string|false {
+        $total_responses = count($this->mockCurlResponses);
+
+        if ($this->mockCurlIndex >= $total_responses) {
+          throw new \RuntimeException(sprintf('curl_exec() called more times than mocked responses. Expected %d request(s), but attempting request #%d.', $total_responses, $this->mockCurlIndex + 1));
+        }
+
+        $mock = $this->mockCurlResponses[$this->mockCurlIndex];
+
+        // Validate response structure.
+        if (!isset($mock['url'])) {
+          throw new \InvalidArgumentException('Mocked curl response must include "url" key to specify expected URL.');
+        }
+
+        // Validate URL matches.
+        if ($mock['url'] !== $current_url) {
+          throw new \RuntimeException(sprintf('curl request made to unexpected URL. Expected "%s", got "%s".', $mock['url'], $current_url));
+        }
+
+        // Validate method if specified.
+        if (isset($mock['method']) && $mock['method'] !== $current_method) {
+          throw new \RuntimeException(sprintf('curl request made with unexpected method. Expected "%s", got "%s".', $mock['method'], $current_method ?? 'GET'));
+        }
+
+        // Apply defaults to response.
+        $response = $mock['response'] + [
+          'ok' => TRUE,
+          'status' => 200,
+          'body' => '',
+          'error' => NULL,
+          'info' => [],
+        ];
+
         return $response['body'];
       });
 
-    // Mock curl_errno - returns 0 for success or 1 for error.
-    $curl_errno = $this->getFunctionMock($namespace, 'curl_errno');
-    $curl_errno->expects($this->any())
-      ->willReturnCallback(function () use ($responses, &$errno_index, $total_responses): int {
-        if ($errno_index >= $total_responses) {
-          throw new \RuntimeException(sprintf('curl_errno() called more times than mocked responses. Expected %d request(s), but attempting request #%d.', $total_responses, $errno_index + 1));
-        }
-        $response = $responses[$errno_index++];
-        return isset($response['error']) ? 1 : 0;
+    // Mock curl_errno - returns 0 for success or non-zero for error.
+    $this->mockCurl['curl_errno'] = $this->getFunctionMock($namespace, 'curl_errno');
+    $this->mockCurl['curl_errno']->expects($this->any())
+      ->willReturnCallback(function (): int {
+        $mock = $this->mockCurlResponses[$this->mockCurlIndex];
+        $response = $mock['response'] + ['error' => NULL];
+        return $response['error'] !== NULL ? 1 : 0;
       });
 
     // Mock curl_error - returns error message if present.
-    $curl_error = $this->getFunctionMock($namespace, 'curl_error');
-    $curl_error->expects($this->any())
-      ->willReturnCallback(function () use ($responses, &$error_index, $total_responses) {
-        if ($error_index >= $total_responses) {
-          return '';
-        }
-        $response = $responses[$error_index++];
+    $this->mockCurl['curl_error'] = $this->getFunctionMock($namespace, 'curl_error');
+    $this->mockCurl['curl_error']->expects($this->any())
+      ->willReturnCallback(function (): string {
+        $mock = $this->mockCurlResponses[$this->mockCurlIndex];
+        $response = $mock['response'] + ['error' => NULL];
         return $response['error'] ?? '';
       });
 
-    // Mock curl_getinfo - returns HTTP status code.
-    $curl_getinfo = $this->getFunctionMock($namespace, 'curl_getinfo');
-    $curl_getinfo->expects($this->any())
-      ->willReturnCallback(function () use ($responses, &$getinfo_index, $total_responses): array {
-        if ($getinfo_index >= $total_responses) {
-          throw new \RuntimeException(sprintf('curl_getinfo() called more times than mocked responses. Expected %d request(s), but attempting request #%d.', $total_responses, $getinfo_index + 1));
-        }
-        $response = $responses[$getinfo_index++];
-        return ['http_code' => $response['status']];
+    // Mock curl_getinfo - returns info array with http_code.
+    $this->mockCurl['curl_getinfo'] = $this->getFunctionMock($namespace, 'curl_getinfo');
+    $this->mockCurl['curl_getinfo']->expects($this->any())
+      ->willReturnCallback(function (): array {
+        $mock = $this->mockCurlResponses[$this->mockCurlIndex];
+        $response = $mock['response'] + ['status' => 200, 'info' => []];
+        $info = $response['info'] + ['http_code' => $response['status']];
+        return $info;
       });
 
-    // Mock curl_close - does nothing.
-    $curl_close = $this->getFunctionMock($namespace, 'curl_close');
-    $curl_close->expects($this->any())->willReturn(NULL);
+    // Mock curl_close - increments index when curl handle is closed.
+    $this->mockCurl['curl_close'] = $this->getFunctionMock($namespace, 'curl_close');
+    $this->mockCurl['curl_close']->expects($this->any())
+      ->willReturnCallback(function () use (&$current_url, &$current_method): void {
+        $this->mockCurlIndex++;
+        $current_url = NULL;
+        $current_method = NULL;
+      });
   }
 
   /**
-   * Mock curl single call to return predefined response.
+   * Mock single curl call.
    *
-   * @param array{status: int, body: string|bool, error?: string|int|null} $response
-   *   A single responses to return for one curl call.
-   *   Each response should have:
-   *   - status: HTTP status code
-   *   - body: Response body
-   *   - error: Optional error message (defaults to null for success).
+   * @param array{url: string, method?: string, response: array{ok?: bool, status: int, body?: string|false, error?: string|null, info?: array<string, mixed>}} $response
+   *   Response with url, optional method, and response data.
    * @param string $namespace
-   *   Namespace to mock the functions in (defaults to DrevOps\VortexTooling).
-   *
-   * @throws \RuntimeException
-   *   When more curl requests are made than mocked responses available.
+   *   Namespace to mock the functions in.
    */
   protected function mockCurl(array $response, string $namespace = 'DrevOps\\VortexTooling'): void {
     $this->mockCurlMultiple([$response], $namespace);
+  }
+
+  /**
+   * Verify all mocked curl responses were consumed.
+   *
+   * @throws \PHPUnit\Framework\AssertionFailedError
+   *   When not all mocked responses were consumed.
+   */
+  protected function mockCurlAssertAllMocksConsumed(): void {
+    if (!empty($this->mockCurlResponses) && !$this->mockCurlChecked) {
+      $this->mockCurlChecked = TRUE;
+
+      $total_responses = count($this->mockCurlResponses);
+      $consumed_responses = $this->mockCurlIndex;
+
+      if ($consumed_responses < $total_responses) {
+        $this->fail(sprintf('Not all mocked curl responses were consumed. Expected %d request(s), but only %d request(s) were made.', $total_responses, $consumed_responses));
+      }
+    }
   }
 
 }
