@@ -1,8 +1,0 @@
-@@ -45,7 +45,6 @@
- !.prettierrc.json
- !patches
- !phpcs.xml
--!phpmd.xml
- !phpstan.neon
- !phpunit.xml
- !rector.php
