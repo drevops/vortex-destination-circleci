@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions.
+ */
+
+/**
+ * Ensure toolbar_integration setting is empty if it exists.
+ *
+ * Otherwise, do not change the configuration.
+ * This is here to help upgrade from versions of the Environment Indicator
+ * module that have a removed function for toolbar integration.
+ */
+function environment_indicator_toolbar_install() {
+  // Check if toolbar integration is enabled.
+  $config_factory = \Drupal::configFactory();
+  $settings = $config_factory->getEditable('environment_indicator.settings');
+
+  if ($settings->get('toolbar_integration')) {
+    $settings->set('toolbar_integration', []);
+    $settings->save();
+  }
+}
