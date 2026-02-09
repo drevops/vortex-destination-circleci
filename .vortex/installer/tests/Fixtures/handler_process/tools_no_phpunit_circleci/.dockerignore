@@ -1,8 +1,0 @@
-@@ -45,7 +45,6 @@
- !phpcs.xml
- !phpmd.xml
- !phpstan.neon
--!phpunit.xml
- !postcss.config.js
- !rector.php
- !scripts
