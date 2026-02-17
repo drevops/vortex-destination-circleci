@@ -1,0 +1,81 @@
+:root {
+    --environment-indicator-border-width: 6px;
+}
+
+.toolbar .toolbar-bar .toolbar-tab>a.toolbar-icon.is-active::before {
+    filter: invert(0%);
+}
+
+.toolbar .toolbar-bar .toolbar-tab>a.toolbar-icon.is-active {
+    background-image: linear-gradient(
+        rgba(255, 255, 255, 0.25) 20%,
+        transparent 200%
+    );
+}
+
+.toolbar-bar .toolbar-icon-environment::before {
+    background-image: url("../images/env-bebebe.svg");
+}
+
+.no-svg .toolbar-bar .toolbar-icon-environment::before {
+    background-image: url("../images/env-bebebe.png");
+}
+
+.toolbar-bar .toolbar-icon-environment.is-active::before {
+    background-image: url("../images/env-ffffff.svg");
+}
+
+.no-svg .toolbar-bar .toolbar-icon-environment.is-active::before {
+    background-image: url("../images/env-ffffff.png");
+}
+
+.toolbar .toolbar-tray-vertical .edit-environments {
+    padding: 1em;
+    text-align: right;
+}
+
+.toolbar .toolbar-tray-horizontal .edit-environments {
+    float: right;
+}
+
+/* Style fixes for gin_toolbar */
+.gin--vertical-toolbar .toolbar-menu-administration {
+    border-left: var(--environment-indicator-border-width) solid;
+}
+
+.gin--horizontal-toolbar #toolbar-item-administration-tray {
+    border-top: var(--environment-indicator-border-width) solid;
+    border-bottom: 0;
+}
+
+.gin--horizontal-toolbar .gin-secondary-toolbar {
+    margin-top: var(--environment-indicator-border-width);
+}
+
+.gin--vertical-toolbar
+  .toolbar-menu-administration
+  > .toolbar-menu
+  > .menu-item
+  .toolbar-menu {
+  margin-inline-start: calc(
+    /* stylelint-disable custom-property-pattern */
+      /* See https://www.drupal.org/i/3309113 */
+      /* See https://www.drupal.org/i/3524015 */
+      var(--gin-toolbar-width-collapsed, var(--ginToolbarWidthCollapsed)) - 4px
+      /* stylelint-enable custom-property-pattern */
+  );
+}
+
+.gin--vertical-toolbar[data-toolbar-menu="open"]
+  .toolbar-menu-administration
+  > .toolbar-menu
+  > .menu-item
+  .toolbar-menu {
+  margin-inline-start: calc(
+    /* stylelint-disable custom-property-pattern */
+      /* See https://www.drupal.org/i/3309113 */
+      /* See https://www.drupal.org/i/3524015 */
+      var(--gin-toolbar-width, var(--ginToolbarWidth)) - 4px
+      /* stylelint-enable custom-property-pattern */
+  );
+}
