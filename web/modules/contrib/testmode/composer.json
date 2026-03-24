@@ -1,0 +1,28 @@
+{
+    "name": "drupal/testmode",
+    "description": "Alter existing site content and other configurations when running tests.",
+    "type": "drupal-module",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Alex Skrypnyk",
+            "email": "alex@drevops.com",
+            "homepage": "https://www.drupal.org/u/alexskrypnyk",
+            "role": "Maintainer"
+        }
+    ],
+    "homepage": "https://drupal.org/project/testmode",
+    "support": {
+        "issues": "https://drupal.org/project/issues/testmode",
+        "source": "https://git.drupalcode.org/project/testmode"
+    },
+    "require": {
+        "php": ">=8.2"
+    },
+    "require-dev": {
+        "drupal/autologout": "^2"
+    },
+    "suggest": {
+        "drupal/search_api": "^1.25"
+    }
+}
