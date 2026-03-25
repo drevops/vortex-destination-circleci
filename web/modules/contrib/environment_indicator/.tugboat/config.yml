@@ -1,0 +1,88 @@
+services:
+  php:
+    # Specify the version of Drupal you wish to use for Tugboat below.
+    image: q0rban/tugboat-drupal:10
+    default: true
+    http: false
+    depends: mysql
+    commands:
+      update: |
+        set -eux
+        # Check out a branch using the unique Tugboat ID for this repository, to
+        # ensure we don't clobber an existing branch.
+        git checkout -b $TUGBOAT_REPO_ID
+        # Composer is hungry. You need a Tugboat project with a pretty sizeable
+        # chunk of memory.
+        export COMPOSER_MEMORY_LIMIT=-1
+        # This is an environment variable we added in the Dockerfile that
+        # provides the path to Drupal composer root (not the web root).
+        cd $DRUPAL_COMPOSER_ROOT
+        # We configure the Drupal project to use the checkout of the module as a
+        # Composer package repository.
+        composer config repositories.tugboat vcs $TUGBOAT_ROOT
+        # Now we can require this module, specifing the branch name we created
+        # above that uses the $TUGBOAT_REPO_ID environment variable.
+        composer require drupal/environment_indicator:dev-$TUGBOAT_REPO_ID
+        composer require 'drupal/gin_toolbar:^1.0@RC'
+        composer require 'drupal/gin:^3.0@RC'
+        # Install Drupal on the site.
+        vendor/bin/drush \
+          --yes \
+          --db-url=mysql://tugboat:tugboat@mysql:3306/tugboat \
+          --site-name="Live preview for ${TUGBOAT_PREVIEW_NAME}" \
+          --account-pass=admin \
+          site:install standard
+        # Set up the files directory permissions.
+        mkdir -p $DRUPAL_DOCROOT/sites/default/files
+        chgrp -R www-data $DRUPAL_DOCROOT/sites/default/files
+        chmod 2775 $DRUPAL_DOCROOT/sites/default/files
+        chmod -R g+w $DRUPAL_DOCROOT/sites/default/files
+        # Set up gin theme.
+        vendor/bin/drush --yes theme:install gin
+        vendor/bin/drush --yes config:set system.theme admin gin
+        # Enable 3 modules.
+        vendor/bin/drush --yes pm:enable environment_indicator environment_indicator_ui gin_toolbar
+        vendor/bin/drush --yes config:set environment_indicator.indicator bg_color '#31758e'
+        vendor/bin/drush --yes config:set environment_indicator.indicator fg_color '#d4e5eb'
+        vendor/bin/drush --yes config:set environment_indicator.indicator name "${TUGBOAT_PREVIEW_NAME}"
+        vendor/bin/drush --yes state:set environment_indicator.current_release "${TUGBOAT_REPO_ID}"
+        vendor/bin/drush --yes config:set environment_indicator.switcher.dev machine 'dev'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.dev uuid '971430b9-85ed-4fb7-8ef1-0fae13bd3032'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.dev name 'Development'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.dev url 'https://dev.example.com'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.dev fg_color '#31758e'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.dev bg_color '#d4e5eb'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.dev weight 0
+        vendor/bin/drush --yes config:set environment_indicator.switcher.dev langcode 'en'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.dev status true
+        vendor/bin/drush --yes config:set environment_indicator.switcher.staging machine 'staging'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.staging uuid '971430b9-85ed-4fb7-9ef1-0fae13bd3032'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.staging name 'Staging'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.staging url 'https://staging.example.com'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.staging fg_color '#017bff'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.staging bg_color '#ff94fb'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.staging weight 1
+        vendor/bin/drush --yes config:set environment_indicator.switcher.staging langcode 'en'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.staging status true
+        vendor/bin/drush --yes config:set environment_indicator.switcher.prod machine 'prod'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.prod uuid '971430b9-85ed-5yb7-8ef1-0fae13bd3032'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.prod name 'Production'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.prod url 'https://example.com'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.prod fg_color '#000000'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.prod bg_color '#3dff24'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.prod weight 2
+        vendor/bin/drush --yes config:set environment_indicator.switcher.prod langcode 'en'
+        vendor/bin/drush --yes config:set environment_indicator.switcher.prod status true
+      build: |
+        set -eux
+        # Delete and re-check out this branch in case this is built from a Base Preview.
+        git branch -D $TUGBOAT_REPO_ID && git checkout -b $TUGBOAT_REPO_ID || true
+        export COMPOSER_MEMORY_LIMIT=-1
+        cd $DRUPAL_COMPOSER_ROOT
+        composer install --optimize-autoloader
+        # Update this module, including all dependencies.
+        composer update drupal/environment_indicator --with-all-dependencies
+        vendor/bin/drush --yes updb
+        vendor/bin/drush cache:rebuild
+  mysql:
+    image: tugboatqa/mariadb
