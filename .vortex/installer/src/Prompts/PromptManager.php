@@ -673,9 +673,11 @@ class PromptManager {
       $default = $default_from_handler;
     }
 
-    if (!is_null($default) && $default !== '') {
+    if (!is_null($default)) {
       $default = $handler->normalizeValue($default);
-      $args['default'] = $default;
+      if ($default !== '') {
+        $args['default'] = $default;
+      }
     }
 
     return array_filter($args, fn($value): bool => $value !== NULL);
