@@ -648,8 +648,8 @@ class PromptManager {
     $default_from_handler = $handler->default($responses);
     // Create the env var name.
     $var_name = $handler::envName();
-    // Get from config.
-    $config_val = $this->config->get($var_name);
+    // Get from config (check both full env var name and short handler ID).
+    $config_val = $this->config->get($var_name) ?? $this->config->get(strtoupper($handler::id()));
     $default_from_config = is_null($config_val) ? NULL : $config_val;
     // Get from env.
     $env_val = Env::get($var_name);
@@ -674,6 +674,7 @@ class PromptManager {
     }
 
     if (!is_null($default) && $default !== '') {
+      $default = $handler->normalizeValue($default);
       $args['default'] = $default;
     }
 

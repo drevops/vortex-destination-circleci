@@ -146,6 +146,21 @@ interface HandlerInterface {
   public function discover(): null|string|bool|array;
 
   /**
+   * Normalize an external value to the type expected by this handler.
+   *
+   * Called on values from config, environment variables, and discovery
+   * before they are used as prompt defaults. For example, multiselect
+   * handlers convert comma-separated strings to arrays.
+   *
+   * @param mixed $value
+   *   The raw value to normalize.
+   *
+   * @return mixed
+   *   The normalized value.
+   */
+  public function normalizeValue(mixed $value): mixed;
+
+  /**
    * The validate callback.
    *
    * @return callable|null

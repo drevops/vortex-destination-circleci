@@ -101,6 +101,17 @@ abstract class AbstractHandler implements HandlerInterface {
   /**
    * {@inheritdoc}
    */
+  public function normalizeValue(mixed $value): mixed {
+    if ($this->type() === PromptType::MultiSelect && is_string($value)) {
+      return Converter::fromList($value);
+    }
+
+    return $value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function dependsOn(): ?array {
     return NULL;
   }
