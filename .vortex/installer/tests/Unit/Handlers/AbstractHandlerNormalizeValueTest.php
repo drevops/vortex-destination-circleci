@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace DrevOps\VortexInstaller\Tests\Unit\Handlers;
 
 use DrevOps\VortexInstaller\Prompts\Handlers\AbstractHandler;
+use DrevOps\VortexInstaller\Prompts\Handlers\CustomModules;
 use DrevOps\VortexInstaller\Prompts\Handlers\DeployTypes;
 use DrevOps\VortexInstaller\Prompts\Handlers\Modules;
 use DrevOps\VortexInstaller\Prompts\Handlers\Name;
 use DrevOps\VortexInstaller\Prompts\Handlers\NotificationChannels;
 use DrevOps\VortexInstaller\Prompts\Handlers\Services;
+use DrevOps\VortexInstaller\Prompts\Handlers\Tools;
 use DrevOps\VortexInstaller\Prompts\PromptManager;
 use DrevOps\VortexInstaller\Tests\Unit\UnitTestCase;
 use DrevOps\VortexInstaller\Utils\Config;
@@ -17,9 +19,15 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
- * Tests for AbstractHandler::normalizeValue().
+ * Tests for handler normalizeValue() implementations.
  */
 #[CoversClass(AbstractHandler::class)]
+#[CoversClass(Modules::class)]
+#[CoversClass(Services::class)]
+#[CoversClass(Tools::class)]
+#[CoversClass(CustomModules::class)]
+#[CoversClass(DeployTypes::class)]
+#[CoversClass(NotificationChannels::class)]
 class AbstractHandlerNormalizeValueTest extends UnitTestCase {
 
   #[DataProvider('dataProviderNormalizeValue')]
@@ -47,12 +55,14 @@ class AbstractHandlerNormalizeValueTest extends UnitTestCase {
     // Other multiselect handlers.
     yield 'services - single string' => [Services::id(), 'redis', ['redis']];
     yield 'services - comma string' => [Services::id(), 'redis,solr', ['redis', 'solr']];
+    yield 'tools - single string' => [Tools::id(), 'phpcs', ['phpcs']];
+    yield 'custom_modules - single string' => [CustomModules::id(), 'base', ['base']];
     yield 'deploy_types - single string' => [DeployTypes::id(), 'lagoon', ['lagoon']];
     yield 'notification_channels - single string' => [NotificationChannels::id(), 'email', ['email']];
 
-    // Text handler: string passed through unchanged.
+    // Text handler: string passed through unchanged (AbstractHandler default).
     yield 'name - string passthrough' => [Name::id(), 'My Project', 'My Project'];
-    // Text handler: array passed through unchanged (not its concern).
+    // Text handler: array passed through unchanged.
     yield 'name - array passthrough' => [Name::id(), ['a'], ['a']];
   }
 

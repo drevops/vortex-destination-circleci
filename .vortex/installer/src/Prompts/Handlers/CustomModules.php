@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DrevOps\VortexInstaller\Prompts\Handlers;
 
+use DrevOps\VortexInstaller\Utils\Converter;
 use DrevOps\VortexInstaller\Utils\File;
 use DrevOps\VortexInstaller\Utils\Tui;
 
@@ -108,6 +109,13 @@ DOC;
     sort($modules);
 
     return $modules;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function normalizeValue(mixed $value): mixed {
+    return is_string($value) ? Converter::fromList($value) : $value;
   }
 
   /**

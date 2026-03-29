@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DrevOps\VortexInstaller\Prompts\Handlers;
 
+use DrevOps\VortexInstaller\Utils\Converter;
 use DrevOps\VortexInstaller\Utils\File;
 use DrevOps\VortexInstaller\Utils\Yaml;
 
@@ -103,6 +104,13 @@ class Services extends AbstractHandler {
     sort($services);
 
     return $services;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function normalizeValue(mixed $value): mixed {
+    return is_string($value) ? Converter::fromList($value) : $value;
   }
 
   /**

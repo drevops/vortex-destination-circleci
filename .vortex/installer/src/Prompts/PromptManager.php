@@ -648,12 +648,12 @@ class PromptManager {
     $default_from_handler = $handler->default($responses);
     // Create the env var name.
     $var_name = $handler::envName();
-    // Get from config (check both full env var name and short handler ID).
-    $config_val = $this->config->get($var_name) ?? $this->config->get(strtoupper($handler::id()));
-    $default_from_config = is_null($config_val) ? NULL : $config_val;
+    // Get from config.
+    $config_val = $this->config->get($var_name);
+    $default_from_config = is_null($config_val) ? NULL : $handler->normalizeValue($config_val);
     // Get from env.
     $env_val = Env::get($var_name);
-    $default_from_env = is_null($env_val) ? NULL : Env::toValue($env_val);
+    $default_from_env = is_null($env_val) ? NULL : $handler->normalizeValue(Env::toValue($env_val));
     // Get from discovery.
     $default_from_discovery = $this->handlers[$id]->discover();
 
@@ -673,11 +673,8 @@ class PromptManager {
       $default = $default_from_handler;
     }
 
-    if (!is_null($default)) {
-      $default = $handler->normalizeValue($default);
-      if ($default !== '') {
-        $args['default'] = $default;
-      }
+    if (!is_null($default) && $default !== '') {
+      $args['default'] = $default;
     }
 
     return array_filter($args, fn($value): bool => $value !== NULL);

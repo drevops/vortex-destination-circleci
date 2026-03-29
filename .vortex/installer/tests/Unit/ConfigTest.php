@@ -72,23 +72,27 @@ class ConfigTest extends UnitTestCase {
     ];
     yield 'single_value' => [
       '{"name": "test"}',
-        ['NAME' => 'test'],
+        ['VORTEX_INSTALLER_PROMPT_NAME' => 'test'],
     ];
     yield 'multiple_values' => [
       '{"name": "test", "version": "1.0.0", "debug": true}',
-        ['NAME' => 'test', 'VERSION' => '1.0.0', 'DEBUG' => TRUE],
+        ['VORTEX_INSTALLER_PROMPT_NAME' => 'test', 'VORTEX_INSTALLER_PROMPT_VERSION' => '1.0.0', 'VORTEX_INSTALLER_PROMPT_DEBUG' => TRUE],
     ];
     yield 'mixed_types' => [
       '{"string": "value", "number": 42, "boolean": true, "null": null}',
-        ['STRING' => 'value', 'NUMBER' => 42, 'BOOLEAN' => TRUE],
+        ['VORTEX_INSTALLER_PROMPT_STRING' => 'value', 'VORTEX_INSTALLER_PROMPT_NUMBER' => 42, 'VORTEX_INSTALLER_PROMPT_BOOLEAN' => TRUE],
     ];
     yield 'nested_objects_and_arrays' => [
       '{"config": {"nested": "value"}, "list": [1, 2, 3]}',
-        ['CONFIG' => ['nested' => 'value'], 'LIST' => [1, 2, 3]],
+        ['VORTEX_INSTALLER_PROMPT_CONFIG' => ['nested' => 'value'], 'VORTEX_INSTALLER_PROMPT_LIST' => [1, 2, 3]],
     ];
     yield 'lowercase_keys_get_uppercased' => [
       '{"lowercase_key": "value", "MixedCase": "value2"}',
-        ['LOWERCASE_KEY' => 'value', 'MIXEDCASE' => 'value2'],
+        ['VORTEX_INSTALLER_PROMPT_LOWERCASE_KEY' => 'value', 'VORTEX_INSTALLER_PROMPT_MIXEDCASE' => 'value2'],
+    ];
+    yield 'full_env_var_name_not_double_prefixed' => [
+      '{"VORTEX_INSTALLER_PROMPT_NAME": "test"}',
+        ['VORTEX_INSTALLER_PROMPT_NAME' => 'test'],
     ];
   }
 

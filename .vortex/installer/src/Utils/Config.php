@@ -66,12 +66,21 @@ final class Config {
 
     $instance = new self();
 
+    $prefix = 'VORTEX_INSTALLER_PROMPT_';
+
     foreach ($config as $key => $value) {
       if (!is_string($key)) {
         throw new \RuntimeException(sprintf('Invalid key "%s" in JSON string provided.', $key));
       }
 
-      $instance->set(strtoupper($key), $value);
+      $normalized_key = strtoupper($key);
+
+      // Ensure all prompt keys use the full env var name.
+      if (!str_starts_with($normalized_key, $prefix)) {
+        $normalized_key = $prefix . $normalized_key;
+      }
+
+      $instance->set($normalized_key, $value);
     }
 
     return $instance;

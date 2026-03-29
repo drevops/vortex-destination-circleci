@@ -96,6 +96,13 @@ class NotificationChannels extends AbstractHandler {
   /**
    * {@inheritdoc}
    */
+  public function normalizeValue(mixed $value): mixed {
+    return is_string($value) ? Converter::fromList($value) : $value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function process(): void {
     $v = $this->getResponseAsArray();
     $t = $this->tmpDir;

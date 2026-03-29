@@ -6,6 +6,7 @@ namespace DrevOps\VortexInstaller\Prompts\Handlers;
 
 use AlexSkrypnyk\File\ContentFile\ContentFile;
 use AlexSkrypnyk\File\Replacer\Replacement;
+use DrevOps\VortexInstaller\Utils\Converter;
 use DrevOps\VortexInstaller\Utils\File;
 use DrevOps\VortexInstaller\Utils\JsonManipulator;
 use DrevOps\VortexInstaller\Utils\Strings;
@@ -93,6 +94,13 @@ class Tools extends AbstractHandler {
     sort($tools);
 
     return $tools;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function normalizeValue(mixed $value): mixed {
+    return is_string($value) ? Converter::fromList($value) : $value;
   }
 
   /**
