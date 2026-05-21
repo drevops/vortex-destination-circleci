@@ -76,9 +76,9 @@ When updating template scripts:
 When updating template files (settings, configs, etc.):
 
 1. Make and commit code changes first
-2. Then run `ahoy update-snapshots` — snapshots compare against the
-   committed baseline, so uncommitted changes will not be picked up
-   correctly
+2. Then run `ahoy update-snapshots` — the test harness exports the
+   SUT from `git archive HEAD`, so uncommitted changes will not be
+   reflected in the regenerated snapshots
 
 ## Environment Variables
 
