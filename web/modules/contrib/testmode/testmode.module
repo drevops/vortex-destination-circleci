@@ -1,0 +1,150 @@
+<?php
+
+/**
+ * @file
+ * A module used for providing hook implementation used in tests.
+ *
+ * Test hooks alter content only if the test mode is enabled ('test_mode'
+ * variable is set).
+ * This module should never be enabled in production.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Url;
+use Drupal\search_api\Plugin\views\query\SearchApiQuery;
+use Drupal\testmode\Testmode;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\views\Plugin\views\query\Sql;
+use Drupal\views\ViewExecutable;
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function testmode_views_query_alter(ViewExecutable $view, QueryPluginBase $query): void {
+  // Don't alter any non-sql views queries.
+  if (!$query instanceof Sql && !$query instanceof SearchApiQuery) {
+    return;
+  }
+
+  // Add cache tag to all views.
+  // Required to invalidate tags when enabling test mode for already cached
+  // views.
+  // Since this module is not for production environment, the views caching
+  // may be reset more often, so using single views tag for all views is
+  // sufficient.
+  $view->element['#cache']['tags'][] = Testmode::CACHE_VIEWS;
+
+  $testmode = Testmode::getInstance();
+  if ($testmode->isTestMode()) {
+    if (in_array($view->id(), $testmode->getNodeViews())) {
+      _testmode_apply_pattern_filter($query, 'entity:node', 'title', 'node_field_data', $testmode->getNodePatterns());
+      return;
+    }
+
+    if (in_array($view->id(), $testmode->getTermViews())) {
+      _testmode_apply_pattern_filter($query, 'entity:taxonomy_term', 'name', 'taxonomy_term_field_data', $testmode->getTermPatterns());
+      return;
+    }
+
+    if (in_array($view->id(), $testmode->getUserViews())) {
+      _testmode_apply_pattern_filter($query, 'entity:user', 'mail', 'users_field_data', $testmode->getUserPatterns());
+      return;
+    }
+  }
+}
+
+/**
+ * Apply a testmode pattern filter to a Views query.
+ *
+ * Handles both SQL-backed queries and Search API-backed queries. For SQL
+ * queries, filters on the given database column using 'LIKE'. For Search API
+ * queries, resolves the indexed field whose property path matches the entity
+ * column (e.g. the indexed field with property path 'title' on the node
+ * datasource) and adds a condition on that field ID.
+ *
+ * @param \Drupal\views\Plugin\views\query\QueryPluginBase $query
+ *   The views query (Sql or SearchApiQuery).
+ * @param string $datasource_id
+ *   The Search API entity datasource ID, e.g. 'entity:node'.
+ * @param string $property_path
+ *   The entity field's property path, e.g. 'title', 'name', 'mail'.
+ * @param string $sql_table
+ *   The SQL column's table name for SQL-backed views, e.g. 'node_field_data'.
+ * @param string[] $patterns
+ *   The LIKE patterns configured in testmode.
+ */
+function _testmode_apply_pattern_filter(QueryPluginBase $query, string $datasource_id, string $property_path, string $sql_table, array $patterns): void {
+  if ($query instanceof Sql) {
+    $group = (string) $query->setWhereGroup('OR');
+    foreach ($patterns as $pattern) {
+      $query->addWhere($group, $sql_table . '.' . $property_path, $pattern, 'LIKE');
+    }
+    return;
+  }
+
+  if ($query instanceof SearchApiQuery) {
+    // Resolve which indexed field on this Search API index maps to the
+    // entity's property (e.g. 'content_title' on the 'entity:node' datasource
+    // with property path 'title'). The field ID is user-defined at index
+    // creation time, so the only portable way to find it is to scan the index
+    // field definitions.
+    $field_id = NULL;
+    foreach ($query->getIndex()->getFields() as $id => $field) {
+      if ($field->getDatasourceId() === $datasource_id && $field->getPropertyPath() === $property_path) {
+        $field_id = $id;
+        break;
+      }
+    }
+    if ($field_id === NULL) {
+      // The index does not track the entity's filterable property.
+      // Without a field to match against, testmode cannot filter this view.
+      return;
+    }
+    $group = (int) $query->setWhereGroup('OR');
+    foreach ($patterns as $pattern) {
+      $query->addWhere($group, $field_id, $pattern, '=');
+    }
+    return;
+  }
+}
+
+/**
+ * Implements hook_query_alter().
+ */
+function testmode_query_alter(AlterableInterface $query): void {
+  // Filter term query used for Taxonomy Term Overview page.
+  if ($query->hasTag('taxonomy_term_access')) {
+    $route = Drupal::routeMatch()->getRouteName();
+    if ($route == 'entity.taxonomy_vocabulary.overview_form') {
+      $testmode = Testmode::getInstance();
+      if ($testmode->isTestMode()) {
+        if ($testmode->getListTerm()) {
+          /** @var \Drupal\Core\Database\Query\SelectInterface $query */
+          $query->join('taxonomy_term_field_data', 'ttfd', 'ttfd.tid = t.tid');
+          $or = $query->orConditionGroup();
+          foreach ($testmode->getTermPatterns() as $pattern) {
+            $or->condition('ttfd.name', $pattern, 'LIKE');
+          }
+          $query->condition($or);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_page_bottom().
+ *
+ * @phpstan-ignore-next-line
+ */
+function testmode_page_bottom(array &$page_bottom): void {
+  if (\Drupal::currentUser()->hasPermission('administer site configuration') && Testmode::getInstance()->isTestMode()) {
+    $messenger = \Drupal::messenger();
+    $link = Link::fromTextAndUrl(t('Testmode config page'), Url::fromRoute('testmode.admin_settings'))->toString();
+    $messenger->addMessage(t('Test mode is enabled. Most likely your tests did not clear the test mode flag properly. Disable test mode at @link.', ['@link' => $link]), MessengerInterface::TYPE_WARNING);
+  }
+}
