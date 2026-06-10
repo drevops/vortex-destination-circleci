@@ -1,0 +1,28 @@
+{
+    "name": "drupal/drupal_helpers",
+    "description": "Helper utilities for Drupal",
+    "type": "drupal-module",
+    "keywords": [
+        "drupal",
+        "helper",
+        "utility"
+    ],
+    "homepage": "https://github.com/integratedexperts/drupal_helpers",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Alex Skrypnyk",
+            "email": "alex@drevops.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/AlexSkrypnyk/drupal_helpers/issues",
+        "source": "https://github.com/AlexSkrypnyk/drupal_helpers"
+    },
+    "require": {
+        "php": ">=8.2"
+    },
+    "suggest": {
+        "drupal/redirect": "Required for the Redirect helper."
+    }
+}
