@@ -1,0 +1,12 @@
+name: 'Deploy Steps Example'
+type: module
+description: 'Example deploy steps that redispatch Drush commands and run an external command.'
+package: 'Deploy Steps'
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - deploy_steps:deploy_steps
+
+# Information added by Drupal.org packaging script on 2026-06-13
+version: '1.0.0-alpha1'
+project: 'deploy_steps'
+datestamp: 1781350237
