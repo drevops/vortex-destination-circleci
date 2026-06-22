@@ -1,0 +1,39 @@
+{
+    "name": "drupal/environment_indicator",
+    "description": "Environment Indicator adds some visual cues to indicate which copy of the site are you interacting with",
+    "type": "drupal-module",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Tom Kirkpatrick (mrfelton)",
+            "role": "Original author",
+            "homepage": "https://www.drupal.org/u/mrfelton"
+        },
+        {
+            "name": "Mateu Aguiló Bosch (e0ipso)",
+            "email": "mateu@mateuaguilo.com",
+            "homepage": "https://www.drupal.org/u/e0ipso",
+            "role": "Maintainer"
+        },
+        {
+            "name": "Ignacio Sánchez (isholgueras)",
+            "email": "nacho@isholgueras.com",
+            "homepage": "https://www.drupal.org/u/isholgueras",
+            "role": "Co-maintainer"
+        },
+        {
+            "name": "Chris Green (trackleft2)",
+            "homepage": "https://www.drupal.org/u/trackleft2",
+            "role": "Co-maintainer"
+        }
+    ],
+    "support": {
+      "issues": "https://www.drupal.org/project/issues/environment_indicator",
+      "source": "https://git.drupal.org/project/environment_indicator.git"
+    },
+    "require": {},
+    "require-dev": {
+        "drupal/gin": "^4.0",
+        "drupal/gin_toolbar": "^2.0"
+    }
+}
