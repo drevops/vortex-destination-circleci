@@ -1,0 +1,20 @@
+drupal.environment_indicator:
+  js:
+    js/environment_indicator.js: {}
+  css:
+    component:
+      css/environment_indicator.css: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+tinycon:
+  js:
+    js/tinycon.min.js: { minified: true }
+favicon:
+  js:
+    js/favicon.js: {}
+  dependencies:
+    - core/drupal
+    - core/once
+    - core/jquery
+    - environment_indicator/tinycon
