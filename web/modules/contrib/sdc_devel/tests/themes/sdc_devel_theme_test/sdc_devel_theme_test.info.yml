@@ -1,0 +1,11 @@
+name: "SDC Devel test theme"
+type: theme
+description: "Test theme for SDC Devel."
+core_version_requirement: ^10 || ^11
+base theme: starterkit_theme
+# enforce_prop_schemas: false
+
+# Information added by Drupal.org packaging script on 2026-01-09
+version: '1.0.2'
+project: 'sdc_devel'
+datestamp: 1767972990
