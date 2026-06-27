@@ -1,0 +1,25 @@
+services:
+  Drupal\sdc_devel\Component\ComponentValidatorSilencer:
+    calls:
+      - [setValidator, []]
+
+  sdc_devel.validator:
+    class: Drupal\sdc_devel\Validator
+    arguments:
+      [
+        "@sdc_devel.twig_validator",
+        "@sdc_devel.definition_validator",
+      ]
+
+  sdc_devel.definition_validator:
+    class: Drupal\sdc_devel\DefinitionValidator
+    arguments: ['@Drupal\Core\Theme\Component\ComponentValidator']
+
+  sdc_devel.twig_validator:
+    class: Drupal\sdc_devel\TwigValidator\TwigValidator
+    arguments:
+      ["@twig", "@plugin.manager.twig_validator_rule", "@plugin.manager.sdc"]
+
+  plugin.manager.twig_validator_rule:
+    class: Drupal\sdc_devel\TwigValidatorRulePluginManager
+    parent: default_plugin_manager

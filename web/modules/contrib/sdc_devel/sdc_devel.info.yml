@@ -1,0 +1,11 @@
+name: SDC Devel
+type: module
+description: Provides development aids to component developers.
+# Dependency drupal/core-recommended for twig/twig: ~v3.19.0
+core_version_requirement: ^10.3.12 || ^11.0.11 || ^11.1.2
+package: Development
+
+# Information added by Drupal.org packaging script on 2026-01-09
+version: '1.0.2'
+project: 'sdc_devel'
+datestamp: 1767972990
