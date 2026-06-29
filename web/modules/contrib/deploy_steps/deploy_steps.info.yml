@@ -1,0 +1,9 @@
+name: Deploy Steps
+type: module
+description: 'Runs repeatable, run-on-every-deploy logic as discoverable deploy step plugins.'
+core_version_requirement: ^10.3 || ^11
+
+# Information added by Drupal.org packaging script on 2026-06-13
+version: '1.0.0-alpha1'
+project: 'deploy_steps'
+datestamp: 1781350237
