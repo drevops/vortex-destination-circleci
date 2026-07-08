@@ -1,0 +1,26 @@
+{
+    "name": "drupal/deploy_steps",
+    "description": "Runs repeatable, run-on-every-deploy logic as discoverable deploy step plugins.",
+    "type": "drupal-module",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "Alex Skrypnyk",
+            "email": "alex@drevops.com",
+            "homepage": "https://www.drupal.org/u/AlexSkrypnyk",
+            "role": "Maintainer"
+        }
+    ],
+    "homepage": "https://drupal.org/project/deploy_steps",
+    "support": {
+        "issues": "https://drupal.org/project/issues/deploy_steps",
+        "source": "https://git.drupalcode.org/project/deploy_steps"
+    },
+    "require": {
+        "php": ">=8.2",
+        "drush/drush": "^12.5 || ^13"
+    },
+    "suggest": {
+        "drupal/search_api": "Provides the 'search-api:index' command redispatched by the example 'Index pending Search API items' deploy step."
+    }
+}
