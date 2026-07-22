@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * SDC Devel Devel module.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_theme().
+ */
+function sdc_devel_theme(): array {
+  return [
+    'status_report_errors' => [
+      'variables' => ['amount' => NULL, 'text' => NULL, 'severity' => NULL],
+    ],
+  ];
+}
