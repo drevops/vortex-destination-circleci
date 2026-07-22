@@ -1,0 +1,146 @@
+:root {
+  --environment-indicator-border-width: 6px;
+}
+
+#environment-indicator {
+  z-index: 10;
+  right: 0;
+  left: 0;
+  padding: 5px;
+  text-align: center;
+  white-space: nowrap;
+  color: white;
+  background-image: linear-gradient(
+    to bottom,
+    rgba(207, 207, 207, 0.3) 19%,
+    rgba(250, 250, 250, 0.3) 60%,
+    rgba(255, 255, 255, 0.3) 80%
+  );
+  text-shadow: 0 -1px 1px #333;
+  font-weight: bold;
+}
+
+#environment-indicator .description {
+  font-size: 0.85em;
+}
+
+#environment-indicator .description::before {
+  content: "(";
+}
+
+#environment-indicator .description::after {
+  content: ")";
+}
+
+#environment-indicator ul {
+  overflow: hidden;
+  margin: 0;
+}
+
+#environment-indicator ul.environment-switcher-container li {
+  float: left;
+  list-style: none;
+}
+
+#environment-indicator ul.environment-switcher-container li a {
+  margin: 0 3px;
+  padding: 3px 8px;
+  border: none;
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  border-radius: 15px;
+  text-shadow: none;
+  font-size: 0.8em;
+}
+
+#environment-indicator ul.environment-switcher-container li a:hover {
+  background-color: #ddd;
+  box-shadow: inset 0 1px 5px #333;
+}
+
+#environment-indicator ul.environment-switcher-container {
+  display: none;
+  margin-top: 1px;
+  padding: 8px 10px 6px 10px;
+}
+
+.environment-indicator-color {
+  text-align: center;
+  border-radius: 5px;
+  background-color: #edede0;
+  font-size: 1em;
+}
+
+/*  @todo: Remove everything below this comment in environment_indicator:5.0.0. */
+.toolbar .toolbar-bar .toolbar-tab > a.toolbar-icon.is-active::before {
+  filter: invert(0%);
+}
+
+.toolbar .toolbar-bar .toolbar-tab > a.toolbar-icon.is-active {
+  background-image: linear-gradient(
+    rgba(255, 255, 255, 0.25) 20%,
+    transparent 200%
+  );
+}
+
+.toolbar-bar .toolbar-icon-environment::before {
+  background-image: url("../modules/environment_indicator_toolbar/images/env-bebebe.svg");
+}
+.no-svg .toolbar-bar .toolbar-icon-environment::before {
+  background-image: url("../modules/environment_indicator_toolbar/images/env-bebebe.png");
+}
+.toolbar-bar .toolbar-icon-environment.is-active::before {
+  background-image: url("../modules/environment_indicator_toolbar/images/env-ffffff.svg");
+}
+.no-svg .toolbar-bar .toolbar-icon-environment.is-active::before {
+  background-image: url("../modules/environment_indicator_toolbar/images/env-ffffff.png");
+}
+.toolbar .toolbar-tray-vertical .edit-environments {
+  padding: 1em;
+  text-align: right;
+}
+.toolbar .toolbar-tray-horizontal .edit-environments {
+  float: right;
+}
+
+/* Style fixes for gin_toolbar */
+.gin--vertical-toolbar .toolbar-menu-administration {
+  border-left: var(--environment-indicator-border-width) solid;
+}
+
+.gin--horizontal-toolbar #toolbar-item-administration-tray {
+  border-top: var(--environment-indicator-border-width) solid;
+  border-bottom: 0;
+}
+
+.gin--horizontal-toolbar .gin-secondary-toolbar {
+  margin-top: var(--environment-indicator-border-width);
+}
+
+.gin--vertical-toolbar
+  .toolbar-menu-administration
+  > .toolbar-menu
+  > .menu-item
+  .toolbar-menu {
+  margin-inline-start: calc(
+    /* stylelint-disable custom-property-pattern */
+      /* See https://www.drupal.org/i/3309113 */
+      /* See https://www.drupal.org/i/3524015 */
+      var(--gin-toolbar-width-collapsed, var(--ginToolbarWidthCollapsed)) - 4px
+      /* stylelint-enable custom-property-pattern */
+  );
+}
+
+.gin--vertical-toolbar[data-toolbar-menu="open"]
+  .toolbar-menu-administration
+  > .toolbar-menu
+  > .menu-item
+  .toolbar-menu {
+  margin-inline-start: calc(
+    /* stylelint-disable custom-property-pattern */
+      /* See https://www.drupal.org/i/3309113 */
+      /* See https://www.drupal.org/i/3524015 */
+      var(--gin-toolbar-width, var(--ginToolbarWidth)) - 4px
+      /* stylelint-enable custom-property-pattern */
+  );
+}
