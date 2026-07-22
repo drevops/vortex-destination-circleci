@@ -1,9 +1,0 @@
-node_modules/
-build/
-.docusaurus/
-coverage/
-yarn.lock
-package-lock.json
-*.md
-*.mdx
-tests/fixtures/*.json
