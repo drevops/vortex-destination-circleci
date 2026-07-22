@@ -1,0 +1,96 @@
+<?php
+
+/**
+ * @file
+ * Module implementation file.
+ */
+
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_toolbar().
+ */
+function environment_indicator_toolbar_toolbar() {
+  // If the user does not have the 'access environment indicator' permission,
+  // do not add the toolbar item.
+  if (!\Drupal::currentUser()->hasPermission('access environment indicator')) {
+    return [];
+  }
+  $config = \Drupal::config('environment_indicator.settings');
+  $activeEnvironment = \Drupal::config('environment_indicator.indicator');
+  $environmentIndicator = \Drupal::service('environment_indicator.indicator');
+  $account = \Drupal::currentUser();
+  $items = [];
+  $items['environment_indicator'] = [
+    '#cache' => [
+      'contexts' => ['user.permissions'],
+    ],
+  ];
+  $title = $environmentIndicator->getTitle();
+  $name = $activeEnvironment->get('name');
+  $items['environment_indicator'] += [
+    '#type' => 'toolbar_item',
+    '#weight' => 125,
+    'tab' => [
+      '#type' => 'link',
+      '#title' => $title,
+      '#url' => Url::fromRoute('environment_indicator.settings'),
+      '#attributes' => [
+        'title' => t('Environments'),
+        'class' => ['toolbar-icon', 'toolbar-icon-environment'],
+      ],
+      '#access' => !empty($name) && $account->hasPermission('access environment indicator'),
+    ],
+    'tray' => [
+      '#heading' => t('Environments menu'),
+    ],
+    '#attached' => [
+      'library' => [
+        'environment_indicator_toolbar/toolbar',
+      ],
+      'drupalSettings' => [
+        'environmentIndicator' => [
+          'name' => $name,
+          'fgColor' => $activeEnvironment->get('fg_color'),
+          'bgColor' => $activeEnvironment->get('bg_color'),
+          'toolbars' => ['toolbar' => 'toolbar'],
+        ],
+      ],
+    ],
+  ];
+  if ($config->get('favicon')) {
+    $items['environment_indicator']['#attached']['drupalSettings']['environmentIndicator']['addFavicon'] = $config->get('favicon');
+    $items['environment_indicator']['#attached']['library'][] = 'environment_indicator/favicon';
+  }
+  // Add cache tags to the toolbar item while preserving context.
+  $items['environment_indicator']['#cache']['tags'] = Cache::mergeTags(
+    [
+      'config:environment_indicator.settings',
+      'config:environment_indicator.indicator',
+    ],
+    $environmentIndicator->getCacheTags()
+  );
+  if ($account->hasPermission('administer environment indicator settings')) {
+    $items['environment_indicator']['tray']['configuration'] = [
+      '#type' => 'link',
+      '#title' => t('Configure'),
+      '#url' => Url::fromRoute('environment_indicator.settings'),
+      '#options' => [
+        'attributes' => ['class' => ['edit-environments']],
+      ],
+    ];
+  }
+
+  if ($links = $environmentIndicator->getLinks()) {
+    $items['environment_indicator']['tray']['environment_links'] = [
+      '#theme' => 'links__toolbar_shortcuts',
+      '#links' => $links,
+      '#attributes' => [
+        'class' => ['toolbar-menu'],
+      ],
+    ];
+  }
+
+  return $items;
+}
