@@ -1,0 +1,9 @@
+{
+  "name": "drupal/sdc_devel",
+  "description": "Provides development aids to Single-Directory Components developers.",
+  "license": "GPL-2.0-or-later",
+  "type": "drupal-module",
+  "require": {
+    "twig/twig": "~3.19"
+  }
+}

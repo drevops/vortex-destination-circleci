@@ -1,0 +1,10 @@
+name: Drupal Helpers
+type: module
+description: 'Helper utilities for Drupal.'
+core_version_requirement: ^10.3 || ^11
+package: Development
+
+# Information added by Drupal.org packaging script on 2026-07-22
+version: '2.1.0'
+project: 'drupal_helpers'
+datestamp: 1784763007
