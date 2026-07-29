@@ -1,0 +1,9 @@
+name: 'SDC Devel test'
+type: module
+description: 'Provides some Twig override for tests.'
+package: Testing
+
+# Information added by Drupal.org packaging script on 2026-01-09
+version: '1.0.2'
+project: 'sdc_devel'
+datestamp: 1767972990
