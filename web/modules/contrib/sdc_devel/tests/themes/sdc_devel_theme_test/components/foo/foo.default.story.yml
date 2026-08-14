@@ -1,0 +1,6 @@
+name: Preview
+description: 'Test the preview'
+slots:
+  test_slot_string: 'Foo'
+props:
+  test_prop_string_foo: 'Bar'
