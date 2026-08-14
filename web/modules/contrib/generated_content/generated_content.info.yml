@@ -1,0 +1,10 @@
+name: Generated Content
+type: module
+description: Programmatically generate content.
+core_version_requirement: ^11.2
+package: Other
+
+# Information added by Drupal.org packaging script on 2026-07-10
+version: '2.1.0'
+project: 'generated_content'
+datestamp: 1783645263
