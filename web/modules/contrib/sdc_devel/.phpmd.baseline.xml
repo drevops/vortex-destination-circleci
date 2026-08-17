@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<phpmd-baseline>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="/builds/project/sdc_devel/src/DefinitionValidator.php" method="checkEmptyArrayObject"/>
+  <violation rule="PHPMD\Rule\UnusedFormalParameter" file="/builds/project/sdc_devel/src/Form/OverviewForm.php"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="/builds/project/sdc_devel/src/Plugin/TwigValidatorRule/TwigValidatorRuleFilter.php" method="default"/>
+  <violation rule="PHPMD\Rule\CyclomaticComplexity" file="/builds/project/sdc_devel/src/Plugin/TwigValidatorRule/TwigValidatorRuleFilter.php" method="setAttribute"/>
+  <violation rule="PHPMD\Rule\UnusedLocalVariable" file="/builds/project/sdc_devel/src/TwigValidator/TwigVariableCollectorVisitor.php"/>
+</phpmd-baseline>
