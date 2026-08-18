@@ -1,0 +1,9 @@
+sdc_devel.overview:
+  route_name: sdc_devel.twig_validator
+  title: "Overview"
+  base_route: sdc_devel.twig_validator
+
+sdc_devel.overview_details:
+  route_name: sdc_devel.twig_validator.details
+  title: "Details"
+  base_route: sdc_devel.twig_validator
