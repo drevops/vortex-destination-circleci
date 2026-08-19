@@ -1,0 +1,143 @@
+<?php
+
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
+namespace Solarium\QueryType\Server\CoreAdmin\Result;
+
+use Solarium\Core\Query\Result\QueryType as BaseResult;
+use Solarium\Exception\UnexpectedValueException;
+
+/**
+ * CoreAdmin result object.
+ */
+class Result extends BaseResult
+{
+    protected array $status;
+
+    protected array $initFailures;
+
+    /**
+     * InitFailureResult collection.
+     *
+     * @var InitFailureResult[]|null
+     */
+    protected ?array $initFailureResults;
+
+    /**
+     * StatusResult collection when multiple statuses have been requested.
+     *
+     * @var StatusResult[]|null
+     */
+    protected ?array $statusResults;
+
+    /**
+     * Status result when the status only for one core as requested.
+     */
+    protected ?StatusResult $statusResult;
+
+    protected bool $wasSuccessful = false;
+
+    protected string $statusMessage = 'ERROR';
+
+    /**
+     * @throws UnexpectedValueException
+     *
+     * @return bool
+     */
+    public function getWasSuccessful(): bool
+    {
+        $this->parseResponse();
+
+        return $this->wasSuccessful;
+    }
+
+    /**
+     * @throws UnexpectedValueException
+     *
+     * @return string
+     */
+    public function getStatusMessage(): string
+    {
+        $this->parseResponse();
+
+        return $this->statusMessage;
+    }
+
+    /**
+     * Returns the init failure result objects.
+     *
+     * @throws UnexpectedValueException
+     *
+     * @return InitFailureResult[]|null
+     */
+    public function getInitFailureResults(): ?array
+    {
+        $this->parseResponse();
+
+        return $this->initFailureResults;
+    }
+
+    /**
+     * Returns the status result objects for all requested core statuses.
+     *
+     * @throws UnexpectedValueException
+     *
+     * @return StatusResult[]|null
+     */
+    public function getStatusResults(): ?array
+    {
+        $this->parseResponse();
+
+        return $this->statusResults;
+    }
+
+    /**
+     * Retrieves the status of the core, only available when the query was filtered to a core in the status action.
+     *
+     * @throws UnexpectedValueException
+     *
+     * @return StatusResult|null
+     */
+    public function getStatusResult(): ?StatusResult
+    {
+        $this->parseResponse();
+
+        return $this->statusResult;
+    }
+
+    /**
+     * @param string $coreName
+     *
+     * @return StatusResult|null
+     */
+    public function getStatusResultByCoreName(string $coreName): ?StatusResult
+    {
+        return $this->statusResults[$coreName] ?? null;
+    }
+
+    /**
+     * Magic method for getting inaccessible or non-existent properties.
+     *
+     * @see \Solarium\QueryType\Server\CoreAdmin\ResponseParser
+     *
+     * @param string $name
+     *
+     * @return mixed|null
+     */
+    public function __get(string $name)
+    {
+        /*
+         * Revert the workaround from ResponseParser::parse() to make
+         * Result::$response publicly accessible without conflicting with
+         * the actual protected property of that name.
+         */
+        if ('response' === $name && isset($this->_original_response)) {
+            return $this->_original_response;
+        }
+    }
+}
