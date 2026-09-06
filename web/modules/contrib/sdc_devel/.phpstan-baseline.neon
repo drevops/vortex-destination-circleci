@@ -1,0 +1,25 @@
+parameters:
+	ignoreErrors:
+		-
+			rawMessage: Access to an undefined property Drupal\Core\Extension\Extension::$status.
+			identifier: property.notFound
+			count: 2
+			path: src/Drush/Commands/SdcDevelCommands.php
+
+		-
+			rawMessage: Cannot access offset 'label' on array|Drupal\Component\Plugin\Definition\PluginDefinitionInterface.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/TwigValidatorRulePluginBase.php
+
+		-
+			rawMessage: Cannot access offset 'rule_on_name' on array|Drupal\Component\Plugin\Definition\PluginDefinitionInterface.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: src/TwigValidatorRulePluginBase.php
+
+		-
+			rawMessage: 'Property Drupal\sdc_devel\ValidatorMessage::$id is never read, only written.'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/ValidatorMessage.php
