@@ -1,8 +1,0 @@
-*.jpg
-*.png
-^.docker/config/solr/config-set/*
-package-lock.json
-node_modules
-vendor
-.env.local
-.vortex-manifest.json
