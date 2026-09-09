@@ -1,9 +1,0 @@
-{
-    "name": "vortex-tests",
-    "version": "1.0.0",
-    "description": "Packages used for testing of Vortex",
-    "license": "GPL-2.0-or-later",
-    "devDependencies": {
-        "markdownlint-cli2": "^0.18.1"
-    }
-}
