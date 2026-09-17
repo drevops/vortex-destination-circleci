@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * SDC Devel Devel module.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\sdc_devel\Hook\SdcDevelHooks;
+
+/**
+ * Implements hook_theme().
+ */
+#[LegacyHook]
+function sdc_devel_theme(): array {
+  return Drupal::service(SdcDevelHooks::class)->theme();
+}

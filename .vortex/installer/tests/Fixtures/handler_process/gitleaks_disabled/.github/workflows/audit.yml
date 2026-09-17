@@ -1,9 +1,0 @@
-@@ -82,8 +82,3 @@
-         if: ${{ !cancelled() }}
-         run: composer audit --locked
-         continue-on-error: ${{ vars.VORTEX_CI_COMPOSER_AUDIT_IGNORE_FAILURE == '1' }}
--
--      - name: Scan for committed secrets with Gitleaks
--        if: ${{ !cancelled() }}
--        run: docker run --rm -v "${PWD}":/repo -w /repo ghcr.io/gitleaks/gitleaks:__VERSION__ dir . --no-banner
--        continue-on-error: ${{ vars.VORTEX_CI_GITLEAKS_IGNORE_FAILURE == '1' }}
