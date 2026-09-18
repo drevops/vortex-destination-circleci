@@ -1,0 +1,4 @@
+.cspell.json
+
+# Documentation build output.
+public/
