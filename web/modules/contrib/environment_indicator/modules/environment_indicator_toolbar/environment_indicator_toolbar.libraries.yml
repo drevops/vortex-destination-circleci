@@ -1,0 +1,11 @@
+toolbar:
+  js:
+    js/toolbar.js: {}
+  css:
+    component:
+      css/toolbar.css: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/drupalSettings
+    - core/toolbar
