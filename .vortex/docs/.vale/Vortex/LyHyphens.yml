@@ -1,3 +1,0 @@
-extends: Google.LyHyphens
-exceptions:
-  - supply-chain
