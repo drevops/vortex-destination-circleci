@@ -1,0 +1,17 @@
+<?php
+
+/**
+ * @file
+ * Install and uninstall functions for Testmode module.
+ */
+
+declare(strict_types=1);
+
+use Drupal\testmode\Testmode;
+
+/**
+ * Implements hook_uninstall().
+ */
+function testmode_uninstall():  void {
+  Testmode::getInstance()->disableTestMode();
+}
