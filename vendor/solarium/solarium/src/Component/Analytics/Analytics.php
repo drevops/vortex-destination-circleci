@@ -1,0 +1,191 @@
+<?php
+
+declare(strict_types=1);
+
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
+namespace Solarium\Component\Analytics;
+
+use Solarium\Component\AbstractComponent;
+use Solarium\Component\Analytics\Facet\ConfigurableInitTrait;
+use Solarium\Component\Analytics\Facet\ObjectTrait;
+use Solarium\Component\ComponentAwareQueryInterface;
+use Solarium\Component\RequestBuilder\Analytics as RequestBuilder;
+use Solarium\Component\RequestBuilder\ComponentRequestBuilderInterface;
+use Solarium\Component\ResponseParser\Analytics as ResponseParser;
+use Solarium\Component\ResponseParser\ComponentParserInterface;
+
+/**
+ * Analytics Component.
+ *
+ * @author wicliff <wicliff.wolda@gmail.com>
+ *
+ * @see https://solr.apache.org/guide/analytics.html
+ */
+class Analytics extends AbstractComponent implements \JsonSerializable
+{
+    use ConfigurableInitTrait;
+    use ObjectTrait;
+
+    /**
+     * An array of functions.
+     */
+    private array $functions = [];
+
+    /**
+     * An array of expressions.
+     */
+    private array $expressions = [];
+
+    /**
+     * An array of groupings.
+     *
+     * @var Grouping[]
+     */
+    private array $groupings = [];
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getType(): string
+    {
+        return ComponentAwareQueryInterface::COMPONENT_ANALYTICS;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRequestBuilder(): ComponentRequestBuilderInterface
+    {
+        return new RequestBuilder();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getResponseParser(): ?ComponentParserInterface
+    {
+        return new ResponseParser();
+    }
+
+    /**
+     * @return array
+     */
+    public function getFunctions(): array
+    {
+        return $this->functions;
+    }
+
+    /**
+     * @param array $functions
+     *
+     * @return self Provides fluent interface
+     */
+    public function setFunctions(array $functions): self
+    {
+        foreach ($functions as $key => $function) {
+            $this->addFunction($key, $function);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     * @param string $function
+     *
+     * @return self Provides fluent interface
+     */
+    public function addFunction(string $key, string $function): self
+    {
+        $this->functions[$key] = $function;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExpressions(): array
+    {
+        return $this->expressions;
+    }
+
+    /**
+     * @param array $expressions
+     *
+     * @return self Provides fluent interface
+     */
+    public function setExpressions(array $expressions): self
+    {
+        foreach ($expressions as $key => $expression) {
+            $this->addExpression($key, $expression);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     * @param string $expression
+     *
+     * @return self Provides fluent interface
+     */
+    public function addExpression(string $key, string $expression): self
+    {
+        $this->expressions[$key] = $expression;
+
+        return $this;
+    }
+
+    /**
+     * @return Grouping[]
+     */
+    public function getGroupings(): array
+    {
+        return $this->groupings;
+    }
+
+    /**
+     * @param Grouping[] $groupings
+     *
+     * @return self Provides fluent interface
+     */
+    public function setGroupings(array $groupings): self
+    {
+        foreach ($groupings as $grouping) {
+            $this->addGrouping($this->ensureObject(Grouping::class, $grouping));
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Grouping $grouping
+     *
+     * @return self Provides fluent interface
+     */
+    public function addGrouping(Grouping $grouping): self
+    {
+        $this->groupings[$grouping->getKey()] = $grouping;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function jsonSerialize(): mixed
+    {
+        return array_filter([
+            'functions' => $this->functions,
+            'expressions' => $this->expressions,
+            'groupings' => $this->groupings,
+        ]);
+    }
+}
