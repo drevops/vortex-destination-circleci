@@ -1,0 +1,42 @@
+includes:
+  - .phpstan-baseline.neon
+  - phar://phpstan.phar/conf/bleedingEdge.neon
+
+parameters:
+  level: 7
+
+  editorUrl: 'vscode://file/%%file%%:%%line%%'
+
+  excludePaths:
+    analyseAndScan:
+      - */node_modules/*
+      - */vendor/*
+      - */tests/*
+
+  fileExtensions:
+    - php
+    - module
+    - inc
+    - install
+    - theme
+    - profile
+
+  treatPhpDocTypesAsCertain: false
+  inferPrivatePropertyTypeFromConstructor: true
+  reportUnmatchedIgnoredErrors: false
+
+  ignoreErrors:
+    - identifier: missingType.generics
+    - identifier: missingType.iterableValue
+    # new static() is a best practice in Drupal, so we cannot fix that.
+    - "#^Unsafe usage of new static#"
+    # Ignore common errors for now.
+    - "#Drupal calls should be avoided in classes, use dependency injection instead#"
+    - "#^Plugin definitions cannot be altered.#"
+    - "#^Class .* extends @internal class#"
+    # Try to ignore third party related errors on ci.
+    - "#^PHPDoc tag .* for variable .* contains unknown class Drupal\\\\page_manager\\\\.*.#"
+    - "#^Call to method .* on an unknown class Drupal\\\\page_manager\\\\.*.#"
+    - "#Attribute class Drupal\\\\ui_patterns\\\\.* does not exist.#"
+    - "#Class .* extends unknown class Drupal\\\\ui_patterns\\\\.*#"
+    - "#Parameter .* of method .* has invalid type Drupal\\\\ui_patterns\\\\.*#"
