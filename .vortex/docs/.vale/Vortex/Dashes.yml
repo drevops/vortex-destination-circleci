@@ -1,7 +1,0 @@
-extends: existence
-message: "Use a spaced hyphen (' - ') instead of '%s'."
-level: error
-nonword: true
-tokens:
-  - '—'
-  - '–'
