@@ -1,0 +1,5 @@
+sdc_devel.twig_validator:
+  title: UI components
+  description: Components definitions and templates validation, provided by SDC Devel.
+  parent: system.admin_reports
+  route_name: sdc_devel.twig_validator
