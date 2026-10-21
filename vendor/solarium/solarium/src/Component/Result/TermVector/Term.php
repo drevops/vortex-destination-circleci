@@ -1,0 +1,197 @@
+<?php
+
+/*
+ * This file is part of the Solarium package.
+ *
+ * For the full copyright and license information, please view the COPYING
+ * file that was distributed with this source code.
+ */
+
+namespace Solarium\Component\Result\TermVector;
+
+/**
+ * Select component term vector document field term result.
+ */
+class Term implements \ArrayAccess
+{
+    /**
+     * The term.
+     */
+    protected string $term;
+
+    /**
+     * Term frequency.
+     */
+    protected ?int $tf;
+
+    /**
+     * Positions.
+     *
+     * @var int[]|null
+     */
+    protected ?array $positions;
+
+    /**
+     * Offsets.
+     */
+    protected ?array $offsets;
+
+    /**
+     * Payloads.
+     *
+     * @var string[]|null
+     */
+    protected ?array $payloads;
+
+    /**
+     * Document frequency.
+     */
+    protected ?int $df;
+
+    /**
+     * TF / DF (i.e., TF * IDF).
+     */
+    protected ?float $tfIdf;
+
+    /**
+     * Constructor.
+     *
+     * @param string        $term
+     * @param int|null      $tf
+     * @param int[]|null    $positions
+     * @param array[]|null  $offsets
+     * @param string[]|null $payloads
+     * @param int|null      $df
+     * @param float|null    $tfIdf
+     */
+    public function __construct(string $term, ?int $tf, ?array $positions, ?array $offsets, ?array $payloads, ?int $df, ?float $tfIdf)
+    {
+        $this->term = $term;
+        $this->tf = $tf;
+        $this->positions = $positions;
+        $this->offsets = $offsets;
+        $this->payloads = $payloads;
+        $this->df = $df;
+        $this->tfIdf = $tfIdf;
+    }
+
+    /**
+     * Returns the term.
+     *
+     * @return string
+     */
+    public function getTerm(): string
+    {
+        return $this->term;
+    }
+
+    /**
+     * Returns the term frequency.
+     *
+     * @return int|null
+     */
+    public function getTermFrequency(): ?int
+    {
+        return $this->tf;
+    }
+
+    /**
+     * Returns position information.
+     *
+     * @return int[]|null
+     */
+    public function getPositions(): ?array
+    {
+        return $this->positions;
+    }
+
+    /**
+     * Returns offset information.
+     *
+     * @return array[]|null
+     */
+    public function getOffsets(): ?array
+    {
+        return $this->offsets;
+    }
+
+    /**
+     * Returns payload information.
+     *
+     * @return string[]|null
+     */
+    public function getPayloads(): ?array
+    {
+        return $this->payloads;
+    }
+
+    /**
+     * Returns the document frequency.
+     *
+     * @return int|null
+     */
+    public function getDocumentFrequency(): ?int
+    {
+        return $this->df;
+    }
+
+    /**
+     * Returns the TF / DF (i.e., TF * IDF).
+     *
+     * @return float|null
+     */
+    public function getTermFreqInverseDocFreq(): ?float
+    {
+        return $this->tfIdf;
+    }
+
+    /**
+     * ArrayAccess implementation.
+     *
+     * @param mixed $offset
+     *
+     * @return bool
+     */
+    public function offsetExists($offset): bool
+    {
+        return \in_array($offset, ['tf', 'positions', 'offsets', 'payloads', 'df', 'tf-idf']);
+    }
+
+    /**
+     * ArrayAccess implementation.
+     *
+     * @param mixed $offset
+     *
+     * @return mixed
+     */
+    #[\ReturnTypeWillChange]
+    public function offsetGet($offset)
+    {
+        if ('tf-idf' === $offset) {
+            $offset = 'tfIdf';
+        }
+
+        return $this->{$offset};
+    }
+
+    /**
+     * ArrayAccess implementation.
+     *
+     * @param mixed $offset
+     * @param mixed $value
+     */
+    public function offsetSet($offset, $value): void
+    {
+        // Details are immutable.
+    }
+
+    /**
+     * ArrayAccess implementation.
+     *
+     * @param mixed $offset
+     */
+    public function offsetUnset($offset): void
+    {
+        // Details are immutable.
+    }
+}
