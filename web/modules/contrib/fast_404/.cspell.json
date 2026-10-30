@@ -1,0 +1,36 @@
+{
+  "version": "3.0",
+  "language": "en",
+  "ignorePaths": [
+    "node_modules",
+    "vendor",
+    "core",
+    "modules/contrib"
+  ],
+  "words": [
+    "drush",
+    "autoload",
+    "phpstan",
+    "Drupal",
+    "hook",
+    "farfuture",
+    "trouvé",
+    "introuvable",
+    "personnalisée",
+    "imagestyles",
+    "unknownfile",
+    "preboot",
+    "advagg",
+    "whitelist",
+    "whitelists",
+    "whitelisted",
+    "blacklist",
+    "blacklists",
+    "blacklisted",
+    "e-mail",
+    "grey",
+    "queuing",
+    "yml"
+  ]
+}
+
