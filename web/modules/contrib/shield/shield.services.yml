@@ -1,0 +1,24 @@
+services:
+  shield.middleware:
+    class: Drupal\shield\ShieldMiddleware
+    arguments:
+      - '@config.factory'
+      - '@entity_type.manager'
+      - '@module_handler'
+      - '@request_stack'
+      - '@logger.channel.shield'
+      - '@path_alias.repository'
+    calls:
+      - [setFlood, ['@flood']]
+    tags:
+      # Ensure to come before page caching, so you don't serve cached pages to
+      # banned users.
+      - { name: http_middleware, priority: 250 }
+  logger.channel.shield:
+    parent: logger.channel_base
+    arguments: ['shield']
+  shield.response_subscriber:
+    class: Drupal\shield\EventSubscriber\ShieldSubscriber
+    arguments: ['@config.factory']
+    tags:
+      - { name: event_subscriber }
