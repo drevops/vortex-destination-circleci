@@ -1,0 +1,71 @@
+<?php
+
+/**
+ * @file
+ * Module file for Migrate Tools.
+ */
+
+declare(strict_types=1);
+
+/**
+ * @file
+ * Provides tools for implementing and managing migrations.
+ */
+use Drupal\Core\Hook\Attribute\LegacyHook;
+use Drupal\migrate_tools\Hook\MigrateToolsHooks;
+use Drupal\migrate\Plugin\MigrateSourceInterface;
+use Drupal\migrate\Plugin\MigrationInterface;
+use Drupal\migrate\Row;
+
+/**
+ * Implements hook_entity_type_build().
+ */
+#[LegacyHook]
+function migrate_tools_entity_type_build(array &$entity_types): void {
+  \Drupal::service(MigrateToolsHooks::class)->entityTypeBuild($entity_types);
+}
+
+/**
+ * Implements hook_menu_links_discovered_alter().
+ */
+#[LegacyHook]
+function migrate_tools_menu_links_discovered_alter(&$links): void {
+  \Drupal::service(MigrateToolsHooks::class)->menuLinksDiscoveredAlter($links);
+}
+
+/**
+ * Implements hook_migration_plugins_alter().
+ */
+#[LegacyHook]
+function migrate_tools_migration_plugins_alter(array &$migrations): void {
+  \Drupal::service(MigrateToolsHooks::class)->migrationPluginsAlter($migrations);
+}
+
+/**
+ * Implements hook_migrate_prepare_row().
+ *
+ * @throws \Exception
+ *
+ * @see \Drupal\migrate_tools\EventSubscriber\MigrationImportSync
+ * @see \Drupal\migrate\Plugin\migrate\source\SourcePluginBase::next()
+ */
+#[LegacyHook]
+function migrate_tools_migrate_prepare_row(Row $row, MigrateSourceInterface $source, MigrationInterface $migration): void {
+  \Drupal::service(MigrateToolsHooks::class)->migratePrepareRow($row, $source, $migration);
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+#[LegacyHook]
+function migrate_tools_entity_type_alter(array &$entity_types): void {
+  \Drupal::service(MigrateToolsHooks::class)->entityTypeAlter($entity_types);
+}
+
+/**
+ * Implements hook_config_schema_info_alter().
+ */
+#[LegacyHook]
+function migrate_tools_config_schema_info_alter(array &$definitions): void {
+  \Drupal::service(MigrateToolsHooks::class)->configSchemaInfoAlter($definitions);
+}
