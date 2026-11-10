@@ -1,0 +1,12 @@
+parameters:
+    level: 1
+    ignoreErrors:
+        # new static() is a best practice in Drupal, so we cannot fix that.
+        - "#^Unsafe usage of new static#"
+        # The deprecated oauth2 plugin's library is optional and not installed.
+        - identifier: class.notFound
+          path: src/Plugin/migrate_plus/authentication/OAuth2.php
+        # Drupal 12 removed this attribute; it is still needed before 11.2.
+        - identifier: attribute.notFound
+          path: migrate_plus.module
+          reportUnmatched: false

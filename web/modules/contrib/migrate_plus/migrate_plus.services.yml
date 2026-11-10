@@ -1,0 +1,18 @@
+services:
+  plugin.manager.migrate_plus.authentication:
+    class: Drupal\migrate_plus\AuthenticationPluginManager
+    parent: default_plugin_manager
+  plugin.manager.migrate_plus.data_fetcher:
+    class: Drupal\migrate_plus\DataFetcherPluginManager
+    parent: default_plugin_manager
+  plugin.manager.migrate_plus.data_parser:
+    class: Drupal\migrate_plus\DataParserPluginManager
+    parent: default_plugin_manager
+
+  # Modeler API integration services.
+  migrate_plus.plugin_property_definitions:
+    class: Drupal\migrate_plus\Service\PluginPropertyDefinitions
+    arguments: ['@extension.list.module', '@entity_type.manager']
+  migrate_plus.plugins:
+    class: Drupal\migrate_plus\Service\MigratePlusPlugins
+    arguments: ['@service_container', '@migrate_plus.plugin_property_definitions']
