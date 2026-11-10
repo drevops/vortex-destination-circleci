@@ -1,0 +1,10 @@
+name: Empty
+description: Testing an empty component.
+group: Testing
+tags:
+  - tests
+status: experimental
+props:
+  type: object
+  additionalProperties: false
+  properties: {}
