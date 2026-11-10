@@ -1,0 +1,12 @@
+name: 'Test module for migrate shared configuration'
+type: module
+description: 'Test module for migrate shared configuration'
+package: Testing
+dependencies:
+  - drupal:migrate
+  - migrate_tools:migrate_tools
+
+# Information added by Drupal.org packaging script on 2026-11-02
+version: '6.1.5'
+project: 'migrate_tools'
+datestamp: 1793658872
