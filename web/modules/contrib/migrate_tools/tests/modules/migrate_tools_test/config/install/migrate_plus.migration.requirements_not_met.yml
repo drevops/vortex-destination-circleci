@@ -1,0 +1,18 @@
+langcode: en
+status: true
+id: requirements_not_met
+label: Requirements Not Met
+migration_tags: {  }
+migration_group: default
+source:
+  plugin: migrate_tools_requirements_not_met
+process: {  }
+destination:
+  plugin: 'null'
+migration_dependencies:
+  required: {  }
+  optional: {  }
+dependencies:
+  enforced:
+    module:
+      - migrate_tools_test

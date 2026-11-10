@@ -1,0 +1,169 @@
+<?php
+
+/**
+ * @file
+ * Installation hooks for Scheduled Transitions module.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+
+/**
+ * Adds message template config.
+ *
+ * @param array $sandbox
+ *   Sandbox.
+ */
+function scheduled_transitions_update_8001(array &$sandbox): void {
+  $configFactory = \Drupal::configFactory();
+  $configFactory->getEditable('scheduled_transitions.settings')
+    ->set('message_transition_latest', 'Scheduled transition: transitioning latest revision from [scheduled-transitions:from-state] to [scheduled-transitions:to-state]')
+    ->set('message_transition_historical', 'Scheduled transition: Copied revision #[scheduled-transitions:from-revision-id] and changed from [scheduled-transitions:from-state] to [scheduled-transitions:to-state]')
+    ->set('message_transition_copy_latest_draft', 'Scheduled transition: reverted [scheduled-transitions:latest-state] revision #[scheduled-transitions:latest-revision-id] back to top')
+    ->save(TRUE);
+}
+
+/**
+ * Adds mirror to other operations config.
+ *
+ * @param array $sandbox
+ *   Sandbox.
+ */
+function scheduled_transitions_update_8002(array &$sandbox): void {
+  $configFactory = \Drupal::configFactory();
+  $configFactory->getEditable('scheduled_transitions.settings')
+    ->set('mirror_operations.view scheduled transition', 'update')
+    ->set('mirror_operations.add scheduled transition', 'update')
+    ->save(TRUE);
+}
+
+/**
+ * Add the 'entity_revision_langcode' field to 'scheduled_transition' entities.
+ */
+function scheduled_transitions_update_8003(): void {
+  $storageDefinition = BaseFieldDefinition::create('language')
+    ->setLabel(\t('Content entity revision language'))
+    ->setDescription(\t('The revision language of the entity this scheduled transition is for.'))
+    ->setRequired(TRUE)
+    ->setCardinality(1);
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('entity_revision_langcode', 'scheduled_transition', 'scheduled_transition', $storageDefinition);
+}
+
+/**
+ * Updates data_table in scheduled_transition entity definition.
+ */
+function scheduled_transitions_update_8004(): void {
+  $entityTypeId = 'scheduled_transition';
+  $definitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+  $entityType = $definitionUpdateManager->getEntityType($entityTypeId);
+
+  $entityType->set('data_table', $entityTypeId);
+  $definitionUpdateManager->updateEntityType($entityType);
+}
+
+/**
+ * Updates definitions with functionality necessary for rescheduling.
+ */
+function scheduled_transitions_update_8005(): void {
+  $entityTypeId = 'scheduled_transition';
+  $definitionUpdateManager = \Drupal::entityDefinitionUpdateManager();
+  $entityType = $definitionUpdateManager->getEntityType($entityTypeId);
+
+  $entityType->setFormClass('reschedule', 'Drupal\scheduled_transitions\Form\Entity\ScheduledTransitionRescheduleForm');
+  $routeProviders = $entityType->get('route_provider');
+  $routeProviders['html'] = 'Drupal\scheduled_transitions\Routing\ScheduledTransitionRouteProvider';
+  $entityType->set('route_provider', $routeProviders);
+  $entityType->setLinkTemplate('reschedule-form', '/admin/scheduled-transition/{scheduled_transition}/reschedule');
+  $definitionUpdateManager->updateEntityType($entityType);
+}
+
+/**
+ * Adds revision log override config.
+ *
+ * @param array $sandbox
+ *   Sandbox.
+ */
+function scheduled_transitions_update_8006(array &$sandbox): void {
+  $configFactory = \Drupal::configFactory();
+  $configFactory->getEditable('scheduled_transitions.settings')
+    ->set('message_override', FALSE)
+    ->save(TRUE);
+}
+
+/**
+ * Adds initial retain_processed config for existing sites.
+ *
+ * @param array{mixed} $sandbox
+ *   Sandbox.
+ */
+function scheduled_transitions_update_8007(array &$sandbox): TranslatableMarkup {
+  $configFactory = \Drupal::configFactory();
+  $configFactory->getEditable('scheduled_transitions.settings')
+    ->set('retain_processed', [
+      'enabled' => FALSE,
+      'duration' => '2419200',
+      'link_template' => 'revision',
+    ])
+    ->save(TRUE);
+  return new TranslatableMarkup('Configured Scheduled Transitions to delete Scheduled Transition entities when the related transition has been processed.');
+}
+
+/**
+ * Adds the 'is_processed' field to 'scheduled_transition' entities.
+ *
+ * @param array<mixed> $sandbox
+ *   Sandbox.
+ */
+function scheduled_transitions_update_8008(array $sandbox): TranslatableMarkup {
+  $storageDefinition = BaseFieldDefinition::create('boolean')
+    ->setLabel(\t('Is processed'))
+    ->setDescription(\t('Whether the Scheduled Transition is processed.'))
+    ->setRequired(TRUE)
+    ->setDefaultValue(0)
+    ->setInitialValue(0);
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('is_processed', 'scheduled_transition', 'scheduled_transition', $storageDefinition);
+  return new TranslatableMarkup('Added `is_processed` field to Scheduled Transitions entity.');
+}
+
+/**
+ * Adds the 'processed_date' field to 'scheduled_transition' entities.
+ *
+ * @param array<mixed> $sandbox
+ *   Sandbox.
+ */
+function scheduled_transitions_update_8009(array $sandbox): TranslatableMarkup {
+  $storageDefinition = BaseFieldDefinition::create('timestamp')
+    ->setLabel(\t('Processed on'))
+    ->setDescription(\t('The time the Scheduled Transition is processed.'));
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('processed_date', 'scheduled_transition', 'scheduled_transition', $storageDefinition);
+  return new TranslatableMarkup('Added `processed_date` field to Scheduled Transitions entity.');
+}
+
+/**
+ * Adds the 'processed_revisions' field to 'scheduled_transition' entities.
+ *
+ * @param array<mixed> $sandbox
+ *   Sandbox.
+ */
+function scheduled_transitions_update_8010(array $sandbox): TranslatableMarkup {
+  $storageDefinition = BaseFieldDefinition::create('integer')
+    ->setLabel(\t('Processed entity revision IDs'))
+    ->setDescription(\t('The revision IDs of revisions saved.'))
+    ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED);
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('processed_revisions', 'scheduled_transition', 'scheduled_transition', $storageDefinition);
+  return new TranslatableMarkup('Added `processed_revisions` field to Scheduled Transitions entity.');
+}
+
+/**
+ * Reset container.
+ */
+function scheduled_transitions_update_8011(): TranslatableMarkup {
+  return new TranslatableMarkup('Container cleared for new service dependencies for \Drupal\scheduled_transitions\ScheduledTransitionsJobs');
+}
