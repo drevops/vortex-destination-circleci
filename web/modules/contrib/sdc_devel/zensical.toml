@@ -1,0 +1,53 @@
+[project]
+site_name = "SDC Devel"
+site_url = "https://project.pages.drupalcode.org/sdc_devel/"
+site_dir = "public"
+site_description = "Provides development aids to Single-Directory Components developers."
+repo_name = "drupal/sdc_devel"
+repo_url = "https://git.drupalcode.org/project/sdc_devel"
+edit_uri = "/-/edit/main/docs/"
+nav = [
+  { "Introduction" = "index.md" },
+  { "Usage" = "usage.md" },
+  { "Rules" = "rules.md" },
+  { "Extending" = "extending.md" },
+]
+
+[project.theme]
+language = "en"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+primary = "blue"
+toggle.icon = "lucide/sun-moon"
+toggle.name = "Switch to light mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+primary = "blue"
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+primary = "blue"
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to system preference"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/drupal"
+link = "https://www.drupal.org/project/sdc_devel"
+
+[[project.extra.social]]
+icon = "fontawesome/brands/gitlab"
+link = "https://git.drupalcode.org/project/sdc_devel"
+
+[[project.extra.social]]
+icon = "fontawesome/solid/bolt"
+link = "https://beyris.eu"
+
+[[project.extra.social]]
+icon = "fontawesome/solid/blog"
+link = "https://developpeur-drupal.com/en"
