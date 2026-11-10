@@ -1,0 +1,5 @@
+services:
+  sdc_devel_module_test.twig.mock:
+    class: Drupal\sdc_devel_module_test\Template\TwigExtension
+    tags:
+      - { name: twig.extension, priority: 500 }
