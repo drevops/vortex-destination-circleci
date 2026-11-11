@@ -1,0 +1,139 @@
+<?php
+
+/**
+ * @file
+ * Post update functions for the Entity Usage module.
+ *
+ * Update function descriptions are allowed to be longer.
+ * @phpcs:disable Drupal.Files.LineLength.TooLong
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_removed_post_updates().
+ */
+function entity_usage_removed_post_updates(): array {
+  return [
+    'entity_usage_post_update_regenerate_2x' => '8.x-2.0',
+  ];
+}
+
+/**
+ * Clean up entity usage regenerate queue.
+ */
+function entity_usage_post_update_clean_up_regenerate_queue(array &$sandbox): void {
+  $queue = \Drupal::queue('entity_usage_regenerate_queue');
+  if ($queue->numberOfItems() > 0) {
+    $queue->deleteQueue();
+    \Drupal::messenger()->addWarning('There were unprocessed items in the entity_usage_regenerate_queue. Queue processing is no longer an option for the entity-usage:recreate command. Please re-run the command without the --use-queue flag, or visit the UI and trigger the batch update there.');
+  }
+}
+
+/**
+ * Rebuild the container to add new services for Entity Usage module.
+ */
+function entity_usage_post_update_add_pre_save_url_recorder_service(array &$sandbox): void {
+  // Empty update to force container rebuild.
+}
+
+/**
+ * Remove unsupported source entity types from config.
+ */
+function entity_usage_post_update_remove_unsupported_source_entity_types(array &$sandbox): void {
+  /** @var \Drupal\entity_usage\EntityUsageTrackManager $plugin_manager */
+  $plugin_manager = \Drupal::service('plugin.manager.entity_usage.track');
+  $entity_type_manager = \Drupal::service('entity_type.manager');
+  $config = \Drupal::configFactory()->getEditable('entity_usage.settings');
+
+  // Remove any entity types that are not supported.
+  $source_entity_types = $config->get('track_enabled_source_entity_types') ?? [];
+  $updated_entity_types = [];
+  foreach ($source_entity_types as $entity_type_id) {
+    if ($entity_type_manager->hasDefinition($entity_type_id) && $plugin_manager->isEntityTypeSource($entity_type_manager->getDefinition($entity_type_id))) {
+      $updated_entity_types[] = $entity_type_id;
+    }
+  }
+
+  if ($source_entity_types !== $updated_entity_types) {
+    $config
+      ->set('track_enabled_source_entity_types', $updated_entity_types)
+      ->save();
+  }
+}
+
+/**
+ * Set "local_task_enabled_entity_types" config value to an empty array if null.
+ */
+function entity_usage_post_update_fix_local_task_enabled_entity_types(): void {
+  $config = \Drupal::configFactory()->getEditable('entity_usage.settings');
+  $entity_types = $config->get('local_task_enabled_entity_types');
+  if ($entity_types === NULL) {
+    $config->set('local_task_enabled_entity_types', [])->save();
+  }
+}
+
+/**
+ * Remove paragraphs from tracked entities as they are tracking as inline entities.
+ */
+function entity_usage_post_update_remove_paragraph_tracking_for_inline_plugin(): void {
+  $config = \Drupal::configFactory()->getEditable('entity_usage.settings');
+  $changed = FALSE;
+
+  // Remove 'paragraph' from all entity type tracking lists.
+  $keys_to_clean = [
+    'track_enabled_source_entity_types',
+    'track_enabled_target_entity_types',
+    'edit_warning_message_entity_types',
+    'delete_warning_message_entity_types',
+  ];
+  foreach ($keys_to_clean as $key) {
+    $values = $config->get($key);
+    if (is_array($values) && in_array('paragraph', $values, TRUE)) {
+      $config->set($key, array_values(array_diff($values, ['paragraph'])));
+      $changed = TRUE;
+      // If the source list is empty, emit a warning.
+      if ($key === 'track_enabled_source_entity_types' && empty($config->get($key))) {
+        \Drupal::messenger()->addWarning('There are no source entity types configured for entity usage tracking. Please configure at least one source entity type to track.');
+      }
+    }
+  }
+
+  if ($changed) {
+    $config->save();
+  }
+}
+
+/**
+ * Remove entity types with no IDs from config.
+ */
+function entity_usage_post_update_remove_entity_types_with_no_ids(): void {
+  $entity_type_manager = \Drupal::entityTypeManager();
+  $config = \Drupal::configFactory()->getEditable('entity_usage.settings');
+  $keys_to_check = [
+    'track_enabled_source_entity_types',
+    'track_enabled_target_entity_types',
+    'edit_warning_message_entity_types',
+    'delete_warning_message_entity_types',
+    'local_task_enabled_entity_types',
+  ];
+  $changed = FALSE;
+  foreach ($keys_to_check as $key) {
+    $entity_types = $config->get($key) ?? [];
+    $updated_entity_types = [];
+    foreach ($entity_types as $entity_type_id) {
+      if ($entity_type_manager->hasDefinition($entity_type_id) && $entity_type_manager->getDefinition($entity_type_id)->hasKey('id')) {
+        $updated_entity_types[] = $entity_type_id;
+      }
+    }
+
+    if ($updated_entity_types !== $entity_types) {
+      $changed = TRUE;
+      $config->set($key, $updated_entity_types);
+    }
+  }
+
+  if ($changed) {
+    $config->save();
+  }
+}
