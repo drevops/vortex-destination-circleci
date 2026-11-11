@@ -1,0 +1,32 @@
+includes:
+  - phpstan-baseline.neon
+
+parameters:
+  level: 7
+  paths:
+    - src
+    - tests
+  reportUnmatchedIgnoredErrors: true
+  fileExtensions:
+    - php
+    - module
+    - theme
+    - profile
+    - install
+    - inc
+  stubFiles:
+    - ./stubs/Stubs.stub
+  parallel:
+    jobSize: 20
+    maximumNumberOfProcesses: 32
+    minimumNumberOfJobsPerProcess: 4
+    processTimeout: 180.0
+  ignoreErrors:
+    - identifier: missingType.iterableValue
+    - identifier: varTag.type
+    - identifier: missingType.generics
+    - message: '#^.*does not accept string\.$#'
+    # Ignores "Call to method Drupal\Core\Entity\Query\QueryInterface::accessCheck() with false will always evaluate to true." as reported in https://github.com/phpstan/phpstan/issues/13291
+    - identifier: method.alreadyNarrowedType
+    # Ignore assigning values to with typed data.
+    - message: "#Access to an undefined property.*Drupal\\\\Core\\\\Entity.*#"
