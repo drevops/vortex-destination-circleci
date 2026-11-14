@@ -1,0 +1,26 @@
+name: Devel component
+description: Devel component to catch Twig Syntax errors.
+group: SDC devel
+tags:
+  - tests
+status: experimental
+noUi: true
+props:
+  type: object
+  additionalProperties: false
+  properties:
+    type:
+      title: Error type
+      type: string
+    message:
+      title: Error message
+      type: string
+    line:
+      title: Error line
+      type: number
+    file:
+      title: Error file
+      type: string
+    trace:
+      title: Error trace
+      type: string
