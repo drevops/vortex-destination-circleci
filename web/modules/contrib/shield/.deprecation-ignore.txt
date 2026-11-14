@@ -1,0 +1,6 @@
+# Patterns for deprecations that are not Shield's to fix. CI appends core's
+# .deprecation-ignore.txt to this file. See https://www.drupal.org/node/3285162.
+
+# Key, a development dependency, has not yet added the native return types
+# that Symfony's DebugClassLoader asks for. Remove this once Key declares them.
+%Method "[^"]+" might add "[^"]+" as a native return type declaration in the future\. Do the same in (?:implementation|child class) "Drupal\\key\\[^"]+" now to avoid errors or add an explicit @return annotation to suppress this message%

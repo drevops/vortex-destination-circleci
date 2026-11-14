@@ -1,0 +1,21 @@
+# Use the DrupalCI templates.
+include:
+  - project: $_GITLAB_TEMPLATES_REPO
+    ref: $_GITLAB_TEMPLATES_REF
+    file:
+      - '/includes/include.drupalci.main.yml'
+      - '/includes/include.drupalci.variables.yml'
+      - '/includes/include.drupalci.workflows.yml'
+
+# Start custom overrides.
+variables:
+  OPT_IN_TEST_PREVIOUS_MAJOR: 1
+  OPT_IN_TEST_PREVIOUS_MINOR: 1
+  OPT_IN_TEST_NEXT_MINOR: 1
+  OPT_IN_TEST_NEXT_MAJOR: 1
+  OPT_IN_TEST_MAX_PHP: 1
+  _CSPELL_WORDS: 'multikey'
+  # From core 11.5, PHPUnit reads deprecation ignore patterns only from the
+  # file named here. Point it at the project's .deprecation-ignore.txt, which
+  # CI appends core's own file to. Older cores ignore this variable.
+  DRUPAL_DEPRECATION_FILTER_CONFIG: '{"projectIgnoreFile":"$CI_PROJECT_DIR/.deprecation-ignore.txt"}'
