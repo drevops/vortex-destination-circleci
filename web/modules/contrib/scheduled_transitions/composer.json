@@ -1,0 +1,52 @@
+{
+    "name": "drupal/scheduled_transitions",
+    "description": "Allows users to schedule a revision to change state.",
+    "type": "drupal-module",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "php": ">=8.3",
+        "drupal/core": "^11.1",
+        "drupal/dynamic_entity_reference": "^3.0 || ^4.0"
+    },
+    "require-dev": {
+        "composer/installers": "^2",
+        "drupal/core-dev": ">=11.1",
+        "drush/drush": ">=11",
+        "mockery/mockery": "^1.5",
+        "phpstan/phpstan-deprecation-rules": "^1 || ^2",
+        "phpstan/phpstan-mockery": "^1.1 || ^2",
+        "phpstan/phpstan-strict-rules": "^1 || ^2",
+        "previousnext/coding-standard": "^1",
+        "mglaman/phpstan-drupal": "dev-narrow-id-return-by-isnew--only-existing as 2.9999.9999"
+    },
+    "extra": {
+        "installer-paths": {
+            "web/core": ["type:drupal-core"],
+            "web/modules/contrib/{$name}": ["type:drupal-module"]
+        }
+    },
+    "suggest": {
+        "drupal/token": "Shows Token UI on Add Scheduled Transitions form."
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/dpi/phpstan-drupal.git"
+        }
+    ],
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpstan/extension-installer": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "composer/installers": true,
+            "php-http/discovery": true,
+            "tbachert/spi": true
+        }
+    }
+}
