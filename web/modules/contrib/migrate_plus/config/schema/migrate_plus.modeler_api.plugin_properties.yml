@@ -1,0 +1,405 @@
+# Plugin property definitions for Modeler API integration.
+#
+# Since migrate plugins don't implement PluginFormInterface, these definitions
+# provide the schema for building configuration forms in the visual modeler.
+#
+# Note: Process plugins are not exposed here. They are configured via YAML
+# in the field mapping gateways.
+
+migrate_plus:
+  model_owner: migrate_plus
+  plugins:
+    source:
+      # =========================================================================
+      # Core source plugins
+      # =========================================================================
+
+      # Empty source (core) - returns a single row with constants.
+      # No required properties - this plugin can be instantiated without config.
+      empty:
+        properties:
+          constants:
+            type: text
+            label: 'Constants (YAML)'
+            description: 'Constant values available via constants/key in process plugins.'
+            rows: 3
+
+      # Embedded data source (core) - inline data in migration config.
+      # Required: data_rows, ids
+      embedded_data:
+        properties:
+          data_rows:
+            type: text
+            label: 'Data Rows (YAML)'
+            description: 'Embedded source data as a YAML array of objects. Example: "- { id: 1, name: Example }"'
+            rows: 10
+            required: true
+            default: []
+          ids:
+            type: text
+            label: 'ID Fields (YAML)'
+            description: 'Fields that uniquely identify each row. Example: "id: { type: integer }"'
+            rows: 3
+            required: true
+            default:
+              id:
+                type: integer
+
+      # Content entity source (core) - export entities from current site.
+      # Note: entity_type is derived from the plugin ID (e.g., content_entity:node).
+      content_entity:
+        properties:
+          bundle:
+            type: string
+            label: 'Bundle'
+            description: 'Limit to a specific bundle (optional).'
+          include_translations:
+            type: boolean
+            label: 'Include Translations'
+            description: 'Include entity translations.'
+            default: true
+          add_revision_id:
+            type: boolean
+            label: 'Add Revision ID'
+            description: 'Include revision ID in source IDs.'
+            default: true
+
+      # =========================================================================
+      # Migrate Plus source plugins
+      # =========================================================================
+
+      # URL source plugin (migrate_plus) - fetch from HTTP/file URLs.
+      # Required: urls, fields, ids (data_parser_plugin required at iteration time)
+      url:
+        properties:
+          urls:
+            type: text
+            label: 'Source URLs'
+            description: 'List of URLs to fetch data from (one per line).'
+            rows: 5
+            required: true
+            default:
+              - 'https://example.com/api/data.json'
+          data_fetcher_plugin:
+            type: select
+            label: 'Data Fetcher'
+            description: 'Plugin to fetch data from URLs.'
+            options:
+              http: 'HTTP'
+              file: 'File'
+            default: http
+          data_parser_plugin:
+            type: select
+            label: 'Data Parser'
+            description: 'Plugin to parse the fetched data.'
+            options:
+              json: 'JSON'
+              xml: 'XML'
+              simple_xml: 'Simple XML'
+              soap: 'SOAP'
+            required: true
+            default: json
+          item_selector:
+            type: string
+            label: 'Item Selector'
+            description: 'Path to items in the response (JSON path like "data/items" or XPath like "/response/item").'
+          fields:
+            type: text
+            label: 'Field Definitions (YAML)'
+            description: 'Define fields with name, label, and selector. Example: "- { name: id, label: ID, selector: id }"'
+            rows: 8
+            required: true
+            default:
+              - name: id
+                label: 'ID'
+                selector: id
+          ids:
+            type: text
+            label: 'ID Fields (YAML)'
+            description: 'Fields that uniquely identify each row. Example: "id: { type: integer }"'
+            rows: 3
+            required: true
+            default:
+              id:
+                type: integer
+          headers:
+            type: text
+            label: 'HTTP Headers (YAML)'
+            description: 'Custom HTTP headers as YAML mapping, e.g., "Accept: application/json"'
+            rows: 3
+          request_options:
+            type: text
+            label: 'Request Options (YAML)'
+            description: 'Guzzle request options like timeout, allow_redirects.'
+            rows: 3
+          authentication:
+            type: text
+            label: 'Authentication (YAML)'
+            description: 'Authentication config, e.g., "plugin: basic\nusername: user\npassword: pass"'
+            rows: 4
+          include_raw_data:
+            type: boolean
+            label: 'Include Raw Data'
+            description: 'Include original source data for each row (JSON parser only).'
+            default: false
+          track_changes:
+            type: boolean
+            label: 'Track Changes'
+            description: 'Track changes to source data for incremental migrations.'
+            default: false
+          cache_counts:
+            type: boolean
+            label: 'Cache Counts'
+            description: 'Cache the source row count.'
+            default: false
+          skip_count:
+            type: boolean
+            label: 'Skip Count'
+            description: 'Do not count source rows (for large sources).'
+            default: false
+          constants:
+            type: text
+            label: 'Constants (YAML)'
+            description: 'Constant values available via constants/key in process plugins.'
+            rows: 3
+
+      # Table source plugin (migrate_plus) - read from database table.
+      # Required: table_name, id_fields
+      table:
+        properties:
+          table_name:
+            type: string
+            label: 'Table Name'
+            description: 'Name of the database table to read from.'
+            required: true
+            default: example_table
+          key:
+            type: string
+            label: 'Database Key'
+            description: 'Database connection key (default: "default").'
+            default: default
+          target:
+            type: string
+            label: 'Database Target'
+            description: 'Database connection target (default: "default").'
+            default: default
+          id_fields:
+            type: text
+            label: 'ID Fields (YAML)'
+            description: 'Fields that uniquely identify each row with their types. Example: "id: { type: integer }"'
+            rows: 3
+            required: true
+            default:
+              id:
+                type: integer
+          fields:
+            type: text
+            label: 'Fields (YAML)'
+            description: 'Columns to retrieve (empty = all columns). Format: "column_name: alias"'
+            rows: 5
+          track_changes:
+            type: boolean
+            label: 'Track Changes'
+            description: 'Track changes for incremental migrations.'
+            default: false
+          cache_counts:
+            type: boolean
+            label: 'Cache Counts'
+            description: 'Cache the source row count.'
+            default: false
+          constants:
+            type: text
+            label: 'Constants (YAML)'
+            description: 'Constant values available via constants/key in process plugins.'
+            rows: 3
+
+    destination:
+      # =========================================================================
+      # Core entity destination plugins
+      # =========================================================================
+
+      'entity:node':
+        properties:
+          default_bundle:
+            type: string
+            label: 'Default Bundle'
+            description: 'Default content type for new nodes.'
+          translations:
+            type: boolean
+            label: 'Translations'
+            description: 'This is a translation migration.'
+            default: false
+          overwrite_properties:
+            type: text
+            label: 'Overwrite Properties'
+            description: 'List of properties to overwrite on update (YAML array).'
+            rows: 3
+          validate:
+            type: boolean
+            label: 'Validate'
+            description: 'Validate entities before saving.'
+            default: false
+
+      'entity:user':
+        properties:
+          md5_passwords:
+            type: boolean
+            label: 'MD5 Passwords'
+            description: 'Whether source passwords are MD5 hashed.'
+            default: false
+          overwrite_properties:
+            type: text
+            label: 'Overwrite Properties'
+            description: 'List of properties to overwrite on update (YAML array).'
+            rows: 3
+          validate:
+            type: boolean
+            label: 'Validate'
+            description: 'Validate entities before saving.'
+            default: false
+
+      'entity:taxonomy_term':
+        properties:
+          default_bundle:
+            type: string
+            label: 'Default Vocabulary'
+            description: 'Default vocabulary for new terms.'
+          translations:
+            type: boolean
+            label: 'Translations'
+            description: 'This is a translation migration.'
+            default: false
+          overwrite_properties:
+            type: text
+            label: 'Overwrite Properties'
+            description: 'List of properties to overwrite on update (YAML array).'
+            rows: 3
+
+      'entity:file':
+        properties:
+          source_base_path:
+            type: string
+            label: 'Source Base Path'
+            description: 'Base path for source files.'
+          uri_scheme:
+            type: select
+            label: 'URI Scheme'
+            description: 'File storage scheme.'
+            options:
+              public: 'Public (public://)'
+              private: 'Private (private://)'
+            default: public
+
+      'entity:media':
+        properties:
+          default_bundle:
+            type: string
+            label: 'Default Bundle'
+            description: 'Default media type for new media entities.'
+          overwrite_properties:
+            type: text
+            label: 'Overwrite Properties'
+            description: 'List of properties to overwrite on update (YAML array).'
+            rows: 3
+
+      'entity:paragraph':
+        properties:
+          default_bundle:
+            type: string
+            label: 'Default Bundle'
+            description: 'Default paragraph type.'
+
+      'entity:block_content':
+        properties:
+          default_bundle:
+            type: string
+            label: 'Default Bundle'
+            description: 'Default block type.'
+
+      'entity:menu_link_content':
+        properties: {}
+
+      'entity:redirect':
+        properties:
+          overwrite_properties:
+            type: text
+            label: 'Overwrite Properties'
+            description: 'List of properties to overwrite on update (YAML array).'
+            rows: 3
+
+      # =========================================================================
+      # Migrate Plus destination plugins
+      # =========================================================================
+
+      # Table destination (migrate_plus).
+      # Required: table_name, id_fields
+      table:
+        properties:
+          table_name:
+            type: string
+            label: 'Table Name'
+            description: 'Destination database table name.'
+            required: true
+            default: example_table
+          id_fields:
+            type: text
+            label: 'ID Fields (YAML)'
+            description: 'Fields that uniquely identify each row with their types. Example: "id: { type: integer }"'
+            rows: 3
+            required: true
+            default:
+              id:
+                type: integer
+          key:
+            type: string
+            label: 'Database Key'
+            description: 'Database connection key.'
+            default: default
+          fields:
+            type: text
+            label: 'Field Mapping (YAML)'
+            description: 'Mapping of process results to table columns.'
+            rows: 5
+          batch_size:
+            type: integer
+            label: 'Batch Size'
+            description: 'Number of rows to insert per batch.'
+            default: 1
+
+      # =========================================================================
+      # Core special destination plugins
+      # =========================================================================
+
+      # Null destination (core) - discards all data.
+      # No required properties.
+      'null':
+        properties: {}
+
+      # Config destination (core) - writes to config.
+      # Required: config_name
+      config:
+        properties:
+          config_name:
+            type: string
+            label: 'Config Name'
+            description: 'The configuration object name (e.g., "system.site").'
+            required: true
+            default: system.site
+          store_null:
+            type: boolean
+            label: 'Store NULL Values'
+            description: 'Whether to store NULL values in config.'
+            default: false
+          translations:
+            type: boolean
+            label: 'Translations'
+            description: 'This is a translation migration.'
+            default: false
+
+      # Entity reference revisions destination.
+      'entity_reference_revisions:paragraph':
+        properties:
+          default_bundle:
+            type: string
+            label: 'Default Bundle'
+            description: 'Default paragraph type.'
