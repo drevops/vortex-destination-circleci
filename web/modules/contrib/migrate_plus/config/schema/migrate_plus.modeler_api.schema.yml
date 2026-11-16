@@ -1,0 +1,292 @@
+# Schema for Modeler API integration.
+#
+# This file defines the schema for the field mapping gateway plugin,
+# allowing the Modeler to build a frontend widget for selecting and
+# configuring process plugins.
+
+# Schema for the field mapping gateway plugin configuration.
+migrate_plus.gateway.field:
+  type: mapping
+  label: 'Field Mapping'
+  mapping:
+    field_name:
+      type: string
+      label: 'Field Name'
+      constraints:
+        NotBlank: []
+    process:
+      type: string
+      label: 'Process Plugins'
+
+# YAML schema for the process field in field mapping gateways.
+# This enables the Modeler to build a structured widget for process plugins.
+# The schema follows the convention: yaml.{plugin_schema_key}.{field_key}
+#
+# Uses a discriminated union pattern where the 'plugin' field determines
+# which additional configuration fields are shown.
+yaml.migrate_plus.gateway.field.process:
+  type: sequence
+  label: 'Process Plugin Chain'
+  sequence:
+    type: mapping
+    label: 'Process Plugin'
+    mapping:
+      # The discriminator key specifies which property determines conditional fields.
+      _discriminator: plugin
+
+      # Base properties shown for all process plugins.
+      plugin:
+        type: string
+        label: 'Plugin'
+        constraints:
+          NotBlank: []
+          Choice:
+            callback: '\Drupal\migrate_plus\Validation\MigrateConstraintCallbacks::getProcessPluginOptions'
+      source:
+        type: string
+        label: 'Source'
+
+      # Conditional properties based on plugin value.
+      # Each key is a plugin ID, and the value contains the properties specific to that plugin.
+      _conditional_properties:
+        # get - Get a source value
+        get:
+          default_value:
+            type: scalar
+            label: 'Default Value'
+
+        # callback - Call a PHP callback
+        callback:
+          callable:
+            type: string
+            label: 'Callable'
+
+        # concat - Concatenate multiple values
+        concat:
+          delimiter:
+            type: string
+            label: 'Delimiter'
+
+        # explode - Split a string into an array
+        explode:
+          delimiter:
+            type: string
+            label: 'Delimiter'
+            constraints:
+              NotBlank: []
+          limit:
+            type: integer
+            label: 'Limit'
+
+        # str_replace - String replacement
+        str_replace:
+          search:
+            type: string
+            label: 'Search'
+            constraints:
+              NotBlank: []
+          replace:
+            type: string
+            label: 'Replace'
+          regex:
+            type: boolean
+            label: 'Regular Expression'
+          case_insensitive:
+            type: boolean
+            label: 'Case Insensitive'
+
+        # entity_lookup - Look up an entity by field value
+        entity_lookup:
+          entity_type:
+            type: string
+            label: 'Entity Type'
+            constraints:
+              NotBlank: []
+          bundle_key:
+            type: string
+            label: 'Bundle Key'
+          bundle:
+            type: string
+            label: 'Bundle'
+          value_key:
+            type: string
+            label: 'Value Key'
+            constraints:
+              NotBlank: []
+          ignore_case:
+            type: boolean
+            label: 'Ignore Case'
+
+        # entity_generate - Create an entity if not found
+        entity_generate:
+          entity_type:
+            type: string
+            label: 'Entity Type'
+            constraints:
+              NotBlank: []
+          bundle_key:
+            type: string
+            label: 'Bundle Key'
+          bundle:
+            type: string
+            label: 'Bundle'
+          value_key:
+            type: string
+            label: 'Value Key'
+            constraints:
+              NotBlank: []
+          ignore_case:
+            type: boolean
+            label: 'Ignore Case'
+
+        # migration_lookup - Look up migrated entity
+        migration_lookup:
+          migration:
+            type: string
+            label: 'Migration'
+            constraints:
+              NotBlank: []
+          no_stub:
+            type: boolean
+            label: 'No Stub'
+
+        # static_map - Map values using a static lookup table
+        static_map:
+          map:
+            type: ignore
+            label: 'Value Map'
+          bypass:
+            type: boolean
+            label: 'Bypass Unknown Values'
+          default_value:
+            type: scalar
+            label: 'Default Value'
+
+        # skip_on_empty - Skip row if value is empty
+        skip_on_empty:
+          method:
+            type: string
+            label: 'Method'
+          message:
+            type: string
+            label: 'Message'
+
+        # skip_row_if_not_set - Skip row if source not set
+        skip_row_if_not_set:
+          index:
+            type: string
+            label: 'Index'
+          message:
+            type: string
+            label: 'Message'
+
+        # default_value - Set a default value
+        default_value:
+          default_value:
+            type: scalar
+            label: 'Default Value'
+            constraints:
+              NotBlank: []
+          strict:
+            type: boolean
+            label: 'Strict Mode'
+
+        # flatten - Flatten a nested array
+        flatten: {  }
+
+        # substr - Extract a substring
+        substr:
+          start:
+            type: integer
+            label: 'Start Position'
+          length:
+            type: integer
+            label: 'Length'
+
+        # extract - Extract a value from an array
+        extract:
+          index:
+            type: sequence
+            label: 'Index Path'
+            sequence:
+              type: string
+          default:
+            type: scalar
+            label: 'Default Value'
+
+        # skip_on_value - Skip if value matches
+        skip_on_value:
+          value:
+            type: scalar
+            label: 'Value'
+          not_equals:
+            type: boolean
+            label: 'Not Equals'
+          method:
+            type: string
+            label: 'Method'
+          message:
+            type: string
+            label: 'Message'
+
+        # log - Log the current value
+        log: {  }
+
+        # null_coalesce - Return first non-null value
+        null_coalesce:
+          default_value:
+            type: scalar
+            label: 'Default Value'
+
+        # machine_name - Generate a machine name
+        machine_name: {  }
+
+        # make_unique_entity_field - Ensure field value is unique
+        make_unique_entity_field:
+          entity_type:
+            type: string
+            label: 'Entity Type'
+            constraints:
+              NotBlank: []
+          field:
+            type: string
+            label: 'Field'
+            constraints:
+              NotBlank: []
+          postfix:
+            type: string
+            label: 'Postfix'
+
+        # download - Download a file
+        download:
+          file_exists:
+            type: string
+            label: 'File Exists Action'
+          guzzle_options:
+            type: ignore
+            label: 'Guzzle Options'
+
+        # file_copy - Copy a file
+        file_copy:
+          file_exists:
+            type: string
+            label: 'File Exists Action'
+
+        # format_date - Format a date
+        format_date:
+          from_format:
+            type: string
+            label: 'From Format'
+            constraints:
+              NotBlank: []
+          to_format:
+            type: string
+            label: 'To Format'
+            constraints:
+              NotBlank: []
+          from_timezone:
+            type: string
+            label: 'From Timezone'
+          to_timezone:
+            type: string
+            label: 'To Timezone'
