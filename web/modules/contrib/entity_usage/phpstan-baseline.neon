@@ -1,0 +1,163 @@
+parameters:
+	ignoreErrors:
+		-
+			rawMessage: 'Method Drupal\entity_usage\Cache\BulkLoadCacheBackendDecorator::delete() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: src/Cache/BulkLoadCacheBackendDecorator.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Cache\BulkLoadCacheBackendDecorator::deleteAll() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: src/Cache/BulkLoadCacheBackendDecorator.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Cache\BulkLoadCacheBackendDecorator::deleteMultiple() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: src/Cache/BulkLoadCacheBackendDecorator.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Cache\BulkLoadCacheBackendDecorator::garbageCollection() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: src/Cache/BulkLoadCacheBackendDecorator.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Cache\BulkLoadCacheBackendDecorator::get() has parameter $allow_invalid with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Cache/BulkLoadCacheBackendDecorator.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Cache\BulkLoadCacheBackendDecorator::get() has parameter $cid with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Cache/BulkLoadCacheBackendDecorator.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Cache\BulkLoadCacheBackendDecorator::getMultiple() has parameter $allow_invalid with no type specified.'
+			identifier: missingType.parameter
+			count: 1
+			path: src/Cache/BulkLoadCacheBackendDecorator.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Cache\BulkLoadCacheBackendDecorator::invalidate() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: src/Cache/BulkLoadCacheBackendDecorator.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Cache\BulkLoadCacheBackendDecorator::invalidateAll() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: src/Cache/BulkLoadCacheBackendDecorator.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Cache\BulkLoadCacheBackendDecorator::invalidateMultiple() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: src/Cache/BulkLoadCacheBackendDecorator.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Cache\BulkLoadCacheBackendDecorator::invalidateTags() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: src/Cache/BulkLoadCacheBackendDecorator.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Cache\BulkLoadCacheBackendDecorator::removeBin() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: src/Cache/BulkLoadCacheBackendDecorator.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Cache\BulkLoadCacheBackendDecorator::set() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: src/Cache/BulkLoadCacheBackendDecorator.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Cache\BulkLoadCacheBackendDecorator::setMultiple() has no return type specified.'
+			identifier: missingType.return
+			count: 1
+			path: src/Cache/BulkLoadCacheBackendDecorator.php
+
+		-
+			rawMessage: 'Method Drupal\Core\Entity\EntityListBuilderInterface::getOperations() invoked with 2 parameters, 1 required.'
+			identifier: arguments.count
+			count: 1
+			path: src/Controller/ListUsageController.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\EntityUsageTrackMultipleLoadInterface::getTargetEntitiesFromField() has parameter $field with generic interface Drupal\Core\Field\FieldItemListInterface but does not specify its types: T'
+			identifier: missingType.generics
+			count: 1
+			path: src/EntityUsageTrackMultipleLoadInterface.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\OptimizedRouteEnhancer::copyRawVariables() return type with generic class Symfony\Component\HttpFoundation\InputBag does not specify its types: TInput'
+			identifier: missingType.generics
+			count: 1
+			path: src/OptimizedRouteEnhancer.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Plugin\EntityUsage\Track\DynamicEntityReference::doGetTargetEntities() has parameter $field with generic interface Drupal\Core\Field\FieldItemListInterface but does not specify its types: T'
+			identifier: missingType.generics
+			count: 1
+			path: src/Plugin/EntityUsage/Track/DynamicEntityReference.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Plugin\EntityUsage\Track\DynamicEntityReference::getTargetEntitiesFromField() has parameter $field with generic interface Drupal\Core\Field\FieldItemListInterface but does not specify its types: T'
+			identifier: missingType.generics
+			count: 1
+			path: src/Plugin/EntityUsage/Track/DynamicEntityReference.php
+
+		-
+			rawMessage: 'Parameter #1 $field of method Drupal\entity_usage\Plugin\EntityUsage\Track\DynamicEntityReference::doGetTargetEntities() expects Drupal\Core\Field\FieldItemListInterface, Drupal\Core\TypedData\TraversableTypedDataInterface|null given.'
+			identifier: argument.type
+			count: 1
+			path: src/Plugin/EntityUsage/Track/DynamicEntityReference.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Plugin\EntityUsage\Track\EntityReference::doGetTargetEntities() has parameter $field with generic interface Drupal\Core\Field\FieldItemListInterface but does not specify its types: T'
+			identifier: missingType.generics
+			count: 1
+			path: src/Plugin/EntityUsage/Track/EntityReference.php
+
+		-
+			rawMessage: 'Method Drupal\entity_usage\Plugin\EntityUsage\Track\EntityReference::getTargetEntitiesFromField() has parameter $field with generic interface Drupal\Core\Field\FieldItemListInterface but does not specify its types: T'
+			identifier: missingType.generics
+			count: 1
+			path: src/Plugin/EntityUsage/Track/EntityReference.php
+
+		-
+			rawMessage: 'Parameter #1 $field of method Drupal\entity_usage\Plugin\EntityUsage\Track\EntityReference::doGetTargetEntities() expects Drupal\Core\Field\FieldItemListInterface, Drupal\Core\TypedData\TraversableTypedDataInterface|null given.'
+			identifier: argument.type
+			count: 1
+			path: src/Plugin/EntityUsage/Track/EntityReference.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\filter\FilterPluginCollection|Drupal\filter\Plugin\FilterInterface::$status.
+			identifier: property.notFound
+			count: 1
+			path: src/Plugin/EntityUsage/Track/HtmlLink.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\Core\Field\FieldItemInterface::$summary.
+			identifier: property.notFound
+			count: 1
+			path: src/Plugin/EntityUsage/Track/TextFieldEmbedBase.php
+
+		-
+			rawMessage: Access to an undefined property Drupal\Core\Field\FieldItemInterface::$value.
+			identifier: property.notFound
+			count: 1
+			path: src/Plugin/EntityUsage/Track/TextFieldEmbedBase.php
+
+		-
+			rawMessage: 'PHPDoc tag @var with type array<Drupal\entity_usage\Events\EntityUsageEvent> is not subtype of native type 0|0.0|''''|''0''|array{}|Countable|EmptyIterator|false|null.'
+			identifier: varTag.nativeType
+			count: 1
+			path: tests/src/FunctionalJavascript/BatchUpdateTest.php
