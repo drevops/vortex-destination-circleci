@@ -1,0 +1,40 @@
+{
+    "name": "drupal/migrate_tools",
+    "description": "Tools to assist in developing and running migrations.",
+    "type": "drupal-module",
+    "homepage": "http://drupal.org/project/migrate_tools",
+    "authors": [
+        {
+            "name": "Mike Ryan",
+            "homepage": "https://www.drupal.org/u/mikeryan",
+            "role": "Maintainer"
+        },
+        {
+            "name": "Lucas Hedding",
+            "homepage": "https://www.drupal.org/u/heddn",
+            "role": "Maintainer"
+        }
+    ],
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/migrate_tools",
+        "slack": "#migrate",
+        "source": "https://git.drupalcode.org/project/migrate_tools"
+    },
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "php": ">=8.1",
+        "drupal/core": "^10.5 || ^11 || ^12"
+    },
+    "require-dev": {
+        "drupal/migrate_source_csv": "^3",
+        "drush/drush": "^13.7 || ^14",
+        "drupal/migrate_plus": "^6"
+    },
+    "conflict": {
+        "drush/drush": "<13.7"
+    },
+    "suggest": {
+        "drush/drush": "^13.7 || ^14",
+        "drupal/migrate_plus": "^6"
+    }
+}
