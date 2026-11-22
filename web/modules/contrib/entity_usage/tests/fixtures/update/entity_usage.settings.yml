@@ -1,0 +1,15 @@
+track_enabled_base_fields: false
+local_task_enabled_entity_types: { }
+usage_controller_items_per_page: 25
+track_enabled_source_entity_types:
+  - filter_format
+  - node
+  - paragraph
+track_enabled_plugins:
+  - ckeditor_image
+  - link
+site_domains:
+  - example.com
+  - http://example.org
+  - example.net/subdirectory
+  - http.cat
