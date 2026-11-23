@@ -1,0 +1,22 @@
+# Mirrors gitlab_templates' assets/phpstan.neon, which CI uses when a project
+# has no configuration of its own, plus one exception for older cores.
+parameters:
+  level: 0
+  fileExtensions:
+    - php
+    - module
+    - inc
+    - install
+    - theme
+    - profile
+  reportUnmatchedIgnoredErrors: false
+  ignoreErrors:
+    # new static() is a best practice in Drupal, so we cannot fix that.
+    - "#^Unsafe usage of new static#"
+    # The PHPUnit attributes sit beside the annotations that PHPUnit 9 reads,
+    # and the hook attributes beside procedural hooks for cores before 11.1.
+    # Where those classes do not exist the attributes are never instantiated,
+    # so the previous major reports them without anything being wrong.
+    -
+      identifier: attribute.notFound
+      message: '#^Attribute class (PHPUnit\\Framework\\Attributes|Drupal\\Core\\Hook\\Attribute)\\\w+ does not exist\.$#'
