@@ -1,0 +1,11 @@
+name: 'Rename Admin Paths'
+type: module
+description: 'Rename admin path /admin/.. and /user/.. to /something/..'
+package: Administration
+core_version_requirement: ^10.2 || ^11
+configure: rename_admin_paths.admin
+
+# Information added by Drupal.org packaging script on 2025-07-24
+version: '3.1.0'
+project: 'rename_admin_paths'
+datestamp: 1753342026

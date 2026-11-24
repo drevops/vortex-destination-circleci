@@ -1,0 +1,88 @@
+<?php
+
+use Drupal\Component\Utility\DeprecationHelper;
+use Drupal\Core\Extension\Requirement\RequirementSeverity;
+use Drupal\http_response_headers\Entity\ResponseHeaderInterface;
+
+/**
+ * Implements hook_requirements().
+ */
+function http_response_headers_requirements($phase) {
+  $requirements = [];
+  if ($phase == 'runtime') {
+    // Report response headers that should be configured.
+    if (!http_response_headers_csp_configured()) {
+      $requirements['response_header_security_policy'] = [
+        'title' => t('Content Security Policy'),
+        'value' => t('Not configured'),
+        'description' => t("It is highly recommended to set a secure Content Security Policy.
+        See the <a href=':help'>help page</a> for more information.", [':help' => '/admin/help/http_response_headers']),
+        'severity' => DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '11.2.0', fn() => RequirementSeverity::Warning, fn() => REQUIREMENT_WARNING),
+      ];
+    }
+  }
+  return $requirements;
+}
+
+/**
+ * Checks if a Content Security Policy is configured.
+ *
+ * @return bool
+ *   TRUE if a CSP is configured, FALSE otherwise.
+ */
+function http_response_headers_csp_configured() {
+  // Is a CSP configured from http_response_headers?
+  $entity_manager = \Drupal::entityTypeManager()->getStorage('response_header');
+  $content_security_policy = $entity_manager->load('content_security_policy');
+  if (isset($content_security_policy) && ($content_security_policy instanceof ResponseHeaderInterface) && !empty($content_security_policy->get('value'))) {
+    return TRUE;
+  }
+
+  $module_handler = \Drupal::moduleHandler();
+
+  // Is a CSP configured from the CSP module?
+  if ($module_handler->moduleExists('csp')) {
+    $csp_config = \Drupal::config('csp.settings');
+    if (!empty($csp_config->get('enforce.enable')) || !empty($csp_config->get('report-only.enable'))) {
+      return TRUE;
+    }
+  }
+
+  // Is a CSP configured from Security Kit?
+  if ($module_handler->moduleExists('seckit')) {
+    $seckit_config = \Drupal::config('seckit.settings')->get('seckit_xss.csp');
+    if (!empty($seckit_config['checkbox'])) {
+      return TRUE;
+    }
+  }
+
+  // No CSP is configured.
+  return FALSE;
+}
+
+/**
+ * Changing to using entities instead of configuration objects.
+ */
+function http_response_headers_update_8001() {
+  $old_config = \Drupal::configFactory()->get('http_response_headers.settings');
+  if (!empty($old_config->get('headers'))) {
+    foreach ($old_config->get('headers') as $header) {
+      $entity = [
+        'id' => preg_replace('/[^a-z0-9_]+/', '_', strtolower($header['name'])),
+        'label' => $header['name'],
+        'name' => $header['name'],
+        'description' => '',
+        'value' => $header['value'],
+        'visibility' => [],
+      ];
+      $entity_manager = \Drupal::entityTypeManager()->getStorage('response_header');
+      if ($existing_entity = current($entity_manager->loadByProperties(array('name' => $entity['name'])))) {
+        $saved = $existing_entity->set('value', $entity['value'])->save();
+      }
+      else {
+        $saved = $entity_manager->create($entity)->save();
+      }
+    }
+    \Drupal::configFactory()->getEditable('http_response_headers.settings')->delete();
+  }
+}
