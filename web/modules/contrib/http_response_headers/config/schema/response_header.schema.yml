@@ -1,0 +1,30 @@
+# Schema for the configuration entities of the HTTP Response Headers module.
+http_response_headers.response_header.*:
+  type: config_entity
+  label: 'HTTP Response Header config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    description:
+      type: string
+      label: 'description'
+    name:
+      type: string
+      label: 'Header type'
+    value:
+      type: string
+      label: 'Header value'
+      nullable: TRUE
+    status:
+      type: boolean
+      label: 'Status'
+    visibility:
+      type: sequence
+      label: 'Visibility Conditions'
+      sequence:
+        type: condition.plugin.[id]
+        label: 'Visibility Condition'
