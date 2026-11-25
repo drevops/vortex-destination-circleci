@@ -1,0 +1,39 @@
+<?php
+
+namespace Drupal\rename_admin_paths\Hook;
+
+use Drupal\Core\Url;
+use Drupal\Core\Link;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Hook\Attribute\Hook;
+
+/**
+ * OOP hooks for the Rename Admin Paths module.
+ */
+class RenameAdminPathsHooks {
+
+  /**
+   * Implements hook_help().
+   */
+  #[Hook('help')]
+  public function help(string $routeName, RouteMatchInterface $routeMatch): string {
+    switch ($routeName) {
+      case 'help.page.rename_admin_paths':
+        $output = '<h3>' . \t('About') . '</h3>';
+        $output .= '<p>' . \t('Rename admin paths module allows users to rename admin paths (/admin/..) to /something/... and (/user/..) to /something_else/...') . '</p>';
+        $output .= '<h3>' . \t('Uses') . '</h3>';
+        $output .= '<dl><dt>' . \t('Rename admin paths') . '</dt>';
+        $output .= '<dd>' . \t('Choose how to rename admin paths by using') . ' ' . Link::fromTextAndUrl(\t('Path admin configuration'), Url::fromRoute('rename_admin_paths.admin'))->toString() . '</dd>';
+        $output .= '</dl>';
+        return $output;
+
+      case 'rename_admin_paths.admin':
+        $output = '<p>' . \t('Configure how to rename admin paths.') . '</p>';
+        return $output;
+
+      default:
+        return '';
+    }
+  }
+
+}
