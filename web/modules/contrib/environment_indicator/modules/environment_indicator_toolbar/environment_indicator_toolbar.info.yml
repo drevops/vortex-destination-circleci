@@ -1,0 +1,13 @@
+name: 'Environment Indicator - Toolbar Integration'
+type: module
+description: 'Changes the toolbar background and text color depending on environment.'
+package: Development
+core_version_requirement: '^9.3 || ^10 || ^11'
+dependencies:
+  - drupal:toolbar
+  - environment_indicator:environment_indicator
+
+# Information added by Drupal.org packaging script on 2025-07-23
+version: '4.0.25'
+project: 'environment_indicator'
+datestamp: 1753296296

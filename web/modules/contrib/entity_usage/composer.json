@@ -1,0 +1,32 @@
+{
+  "name": "drupal/entity_usage",
+  "type": "drupal-module",
+  "description": "Track usage of entities referenced by other entities",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/entity_usage",
+  "minimum-stability": "dev",
+  "support": {
+    "issues": "https://drupal.org/project/issues/entity_usage",
+    "source": "https://git.drupalcode.org/project/entity_usage"
+  },
+  "require": { },
+  "require-dev": {
+    "drupal/entity_embed": "^1.7",
+    "drupal/entity_reference_revisions": "^1.12",
+    "drupal/paragraphs": "^1.19",
+    "drupal/webform": "^6.3@beta",
+    "drupal/block_field": "~1.0",
+    "drupal/dynamic_entity_reference": "^3.0",
+    "drupal/entity_browser": "~2.15",
+    "drupal/entity_browser_block": "^2.0",
+    "drupal/inline_entity_form": "^3.0@RC",
+    "drupal/redirect": "^1.11",
+    "drupal/trash": "^3.0.30",
+    "drush/drush": "^13.7 || ^14.0"
+  },
+  "conflict": {
+    "drupal/trash": "< 3.0.30",
+    "drush/drush": "< 13.7"
+  }
+}

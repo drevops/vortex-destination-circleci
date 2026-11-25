@@ -1,0 +1,191 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Drupal\rename_admin_paths\Form;
+
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
+use Drupal\Core\Form\ConfigFormBase;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteBuilderInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\rename_admin_paths\Config;
+use Drupal\rename_admin_paths\EventSubscriber\RenameAdminPathsEventSubscriber;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
+/**
+ * Settings form for the Rename Admin Paths module.
+ */
+final class RenameAdminPathsSettingsForm extends ConfigFormBase {
+
+  use StringTranslationTrait;
+
+  public function __construct(
+    ConfigFactoryInterface $config_factory,
+    TypedConfigManagerInterface $typed_config_manager,
+    private readonly Config $config,
+    private readonly RouteBuilderInterface $routeBuilder,
+  ) {
+    parent::__construct($config_factory, $typed_config_manager);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  #[\Override]
+  public static function create(ContainerInterface $container): self {
+    return new self(
+      $container->get('config.factory'),
+      $container->get('config.typed'),
+      $container->get(Config::class),
+      $container->get('router.builder'),
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  #[\Override]
+  public function getFormId(): string {
+    return 'rename_admin_paths_settings_form';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  #[\Override]
+  protected function getEditableConfigNames(): array {
+    return [
+      Config::CONFIG_KEY,
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  #[\Override]
+  public function buildForm(array $form, FormStateInterface $form_state): array {
+    $form['admin_path'] = [
+      '#type'  => 'fieldset',
+      '#title' => $this->t('Rename admin path'),
+    ];
+
+    $form['admin_path']['admin_path'] = [
+      '#type'          => 'checkbox',
+      '#title'         => $this->t('Rename admin path'),
+      '#default_value' => $this->config->isPathEnabled('admin'),
+      '#description'   => $this->t(
+        'If checked, "admin" will be replaced by the following term in admin path.'
+      ),
+    ];
+
+    $form['admin_path']['admin_path_value'] = [
+      '#type'             => 'textfield',
+      '#title'            => $this->t('Replace "admin" in admin path by'),
+      '#default_value'    => $this->config->getPathValue('admin'),
+      '#description'      => $this->t(
+        'This value will replace "admin" in admin path.'
+      ),
+      '#element_validate' => [$this->validate(...)],
+    ];
+
+    $form['user_path'] = [
+      '#type'  => 'fieldset',
+      '#title' => $this->t('Rename user path'),
+    ];
+
+    $form['user_path']['user_path'] = [
+      '#type'          => 'checkbox',
+      '#title'         => $this->t('Rename user path'),
+      '#default_value' => $this->config->isPathEnabled('user'),
+      '#description'   => $this->t(
+        'If checked, "user" will be replaced by the following term in user path.'
+      ),
+    ];
+
+    $form['user_path']['user_path_value'] = [
+      '#type'             => 'textfield',
+      '#title'            => $this->t('Replace "user" in user path by'),
+      '#default_value'    => $this->config->getPathValue('user'),
+      '#description'      => $this->t(
+        'This value will replace "user" in user path.'
+      ),
+      '#element_validate' => [$this->validate(...)],
+    ];
+
+    return parent::buildForm($form, $form_state);
+  }
+
+  /**
+   * Validates a form element.
+   *
+   * @param array $element
+   *   The form element to validate.
+   * @param \Drupal\Core\Form\FormStateInterface $formState
+   *   The form state.
+   */
+  public function validate(array &$element, FormStateInterface $formState): void {
+    // @phpstan-ignore-next-line Permit this use of empty.
+    if (empty($element['#value'])) {
+      $formState->setError(
+        $element,
+        $this->t('Path replacement value must contain a value.')
+      );
+    }
+    elseif (!RenameAdminPathsValidator::isValidPath($element['#value'])) {
+      $formState->setError(
+        $element,
+        $this->t(
+          'Path replacement value must contain only letters, numbers, hyphens and underscores.'
+        )
+      );
+    }
+    elseif (RenameAdminPathsValidator::isDefaultPath($element['#value'])) {
+      $formState->setError(
+        $element,
+          $this->t('Renaming to a default name (@s) is not allowed.',
+            ['@s' => implode(', ', RenameAdminPathsEventSubscriber::ADMIN_PATHS)]
+          )
+      );
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  #[\Override]
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
+    $this->saveConfiguration($form_state);
+
+    // At this stage we rebuild all routes to use the new renamed paths.
+    $this->routeBuilder->rebuild();
+
+    // Add confirmation message.
+    parent::submitForm($form, $form_state);
+
+    // Make sure we end up at the same form again using the new path.
+    $form_state->setRedirect('rename_admin_paths.admin');
+  }
+
+  /**
+   * Saves the module configuration.
+   *
+   * @param \Drupal\Core\Form\FormStateInterface $formState
+   *   The form state interface.
+   */
+  private function saveConfiguration(FormStateInterface $formState): void {
+    $this->config->setPathEnabled('admin', $formState->getValue('admin_path'));
+    $this->config->setPathValue(
+      'admin',
+      $formState->getValue('admin_path_value')
+    );
+    $this->config->setPathEnabled('user', $formState->getValue('user_path'));
+    $this->config->setPathValue(
+      'user',
+      $formState->getValue('user_path_value')
+    );
+    $this->config->save();
+  }
+
+}

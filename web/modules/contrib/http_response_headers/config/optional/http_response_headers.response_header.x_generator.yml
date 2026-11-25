@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+id: x_generator
+label: X-Generator
+description: 'Allows the declaration of the CMS type and version to be modified.'
+name: X-Generator
+value: ''
